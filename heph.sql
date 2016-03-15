@@ -7,9 +7,18 @@ CREATE TABLE user
     UserID INT NOT NULL,
     Username VARCHAR(20) NOT NULL,
     Email VARCHAR(60),
-    
+    DispEmail BOOLEAN DEFAULT False,
     PRIMARY KEY (UserID),
 );
+
+/* ???
+CREATE TABLE username
+(
+    UserID INT NOT NULL,
+    
+    FOREIGN KEY UserID REFERENCES user(UserID)
+);
+*/
 
 CREATE TABLE world
 (

@@ -30,6 +30,13 @@ CREATE TABLE world
     FOREIGN KEY CreatorID REFERENCES user(UserID)
 );
 
+CREATE TABLE genre
+(
+    WorldID INT NOT NULL,
+    Genre VARCHAR(20),
+    FOREIGN KEY (WorldID) REFERENCES world(WorldID)
+);
+
 CREATE TABLE userworlds
 (
     WorldID INT NOT NULL,

@@ -3,8 +3,9 @@ body {
 }
 
 #main-header {
-    background-image: url("../images/header_images/header2.jpg");
+    /*background-image: url('../images/header_images/header2.jpg');*/
     color: #eeeeee;
     background-size: 100%;
     background-position: center;
 }
+

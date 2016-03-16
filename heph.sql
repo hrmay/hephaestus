@@ -11,15 +11,6 @@ CREATE TABLE user
     PRIMARY KEY (UserID),
 );
 
-/* ???
-CREATE TABLE username
-(
-    UserID INT NOT NULL,
-    
-    FOREIGN KEY UserID REFERENCES user(UserID)
-);
-*/
-
 CREATE TABLE world
 (
     WorldID INT NOT NULL,

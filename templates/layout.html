@@ -14,6 +14,10 @@ Main layout file for Flask; based on Bare by Start Bootstrap
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    
+    <!-- jQuery Version 1.12.1 -->
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
     <title>Hephaestus</title>
 
@@ -29,7 +33,7 @@ Main layout file for Flask; based on Bare by Start Bootstrap
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+    
 </head>
 
 <body>
@@ -75,6 +79,12 @@ Main layout file for Flask; based on Bare by Start Bootstrap
     <!-- Page Content -->
     {% block content %}{% endblock %}
     
+    <script>
+            var images = ['header1.jpg', 'header2.jpg', 'header3.jpg', 'header4.jpg', 'header5.jpg'];
+            $('#main-header').css('background-image', 'url(../static/images/header_images/' + images[Math.floor(Math.random() * images.length)] + ')');
+            console.log("using image*************8894374389204730813");
+    </script>
+    
     <hr>
     
     <!-- Footer -->
@@ -89,11 +99,12 @@ Main layout file for Flask; based on Bare by Start Bootstrap
         </div>
     </footer>
 
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/jquery.js"></script>
+
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
+    
+    
 
 </body>
 

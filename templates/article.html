@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="panel panel-default" id="world-summary">
+                    <div class="panel-heading">
+                        <p id="world-name" class="lead">World Name</p>
+                        <p id="world-creator" class="small">Username</p>
+                    </div>
+                    <div class="panel-body">
+                        <p class="btn btn-primary" id="world-categories">8 Categories</p>
+                        <p class="btn btn-primary" id="world-records">23 Records</p>
+                    </div>
+                </div>
+                
+                <div class="list-group" id="world-nav">
+                    <a class="list-group-item">How does this look</a>
+                    <a class="list-group-item">And this</a>
+                    <a class="list-group-item">And this</a>
+                    <a class="list-group-item">And this</a>
+                    <a class="list-group-item">Subcategories below</a>
+                        <div class="list-group sub-category">
+                            <a class="list-group-item">One</a>
+                            <a class="list-group-item">Two</a>
+                            <a class="list-group-item">Three</a>
+                        </div>
+                    <a class="list-group-item">Continuing the list</a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+
+                <div class="thumbnail">
+                    <img class="img-responsive" src="http://placehold.it/800x300" alt="" id="article-header">
+                    <div class="caption-full">
+                        <!--<h4 class="pull-right">Article Creator??</h4>-->
+                        <h3>Article Name</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque maximus dolor eget placerat congue. Praesent maximus molestie urna, vel porta ipsum. Vivamus laoreet velit non tellus posuere bibendum. Donec rutrum risus non iaculis bibendum. Nunc sagittis aliquet augue, non rutrum libero. Nullam dignissim egestas odio non laoreet. Maecenas porta id justo ut condimentum. Donec facilisis mauris porta convallis ullamcorper. Mauris mattis congue elit, at hendrerit nibh consequat sed. Aenean aliquam pretium augue, pulvinar sodales leo scelerisque non. Aenean convallis tortor ut enim feugiat ullamcorper. Sed bibendum pulvinar augue, ut fermentum risus mollis et. Maecenas blandit nunc dolor. Vestibulum sed est dignissim, ornare ligula vitae, ultricies quam. Ut sit amet nisi turpis. Cras vel semper enim.</p>
+                        <p>Praesent nec odio eget orci imperdiet blandit. Phasellus luctus erat vel dignissim blandit. In sed purus hendrerit, molestie orci ac, aliquet est. Donec id nisi a odio laoreet dignissim efficitur eget neque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis laoreet risus at feugiat. Donec vehicula iaculis magna, quis venenatis magna hendrerit sit amet. Donec fringilla luctus ante vitae iaculis. Mauris vel porttitor mi. Sed lectus sem, pharetra nec dolor sit amet, semper porttitor massa. Vivamus elit neque, malesuada eu condimentum nec, sollicitudin eu magna. Nam vestibulum est eu fermentum condimentum. Praesent congue nunc porta, ornare libero ut, rhoncus nunc.</p>
+                        <p>Sed vehicula ornare tempor. Nullam eu odio velit. Mauris aliquet justo sed magna pulvinar, ac imperdiet lectus fermentum. Ut pellentesque, orci ut vehicula porta, felis mauris luctus risus, et faucibus elit mauris non turpis. Etiam sed neque rhoncus, mattis sem id, finibus tortor. Phasellus mollis molestie dolor, ut ullamcorper ligula lacinia scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pretium ut leo nec porta.</p>
+                        <p>Etiam sit amet urna quis sapien cursus commodo. Vestibulum arcu leo, sodales dignissim nulla quis, efficitur auctor elit. Integer vitae sodales ipsum. Integer vel dolor cursus, semper elit sed, fringilla tellus. In hac habitasse platea dictumst. Nunc ut ornare nisi, ut iaculis ante. Suspendisse et cursus lacus, nec suscipit orci. Pellentesque at condimentum tellus. Morbi consectetur nibh quis purus malesuada, sed pellentesque massa luctus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus pretium felis id ipsum vestibulum, mollis viverra libero fringilla. Phasellus fermentum, nunc ac sodales sollicitudin, sapien dolor ornare ante, nec tincidunt orci dui in purus. Curabitur iaculis, nibh ac mattis finibus, mi risus dictum dolor, non elementum augue quam vel velit. Duis a felis id nisi dignissim laoreet. Duis vitae finibus libero.</p>
+                        <p>Nullam pharetra urna quis gravida feugiat. Fusce placerat porta lectus, vitae pharetra massa aliquam sed. In fringilla massa vitae tellus fermentum auctor. Aenean ut arcu dapibus, finibus quam eget, commodo risus. Phasellus erat ipsum, ornare ut pulvinar eu, pulvinar eget elit. Integer blandit mi ligula, eget blandit lectus mattis eu. Nam ligula dolor, elementum in eros non, blandit rhoncus nulla. Nullam vel tellus justo. Duis vitae mauris nec justo placerat ullamcorper. Nulla hendrerit mi vitae finibus dictum. Pellentesque porttitor risus a justo efficitur, in volutpat odio iaculis. Integer lacinia urna vitae dolor blandit, id tempor nibh posuere.</p>
+                    </div>
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+{% endblock %}

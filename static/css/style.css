@@ -1,3 +1,9 @@
+/*
+STYLE.CSS
+Custom CSS File separate from Bootstrap. 
+3/16/2016 Created?
+*/
+
 body {
     padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
 }
@@ -37,4 +43,8 @@ works with bootstrap's list group to create an accordion
 
 #world-name, #world-creator {
     margin-bottom: 0px;
+}
+
+#user-info {
+    padding:20px 5px 20px 5px;
 }

@@ -1,8 +1,18 @@
 import os
 from flask import Flask, render_template, request
 import random
+import psycopg2
+import psycopg2.extras
 
 app = Flask(__name__)
+
+def connectToDB():
+    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
+    try:
+        return psycopg2.connect(connectionString)
+    except:
+        print("Can't connect to database.")
+
 
 @app.route('/')
 def mainIndex():

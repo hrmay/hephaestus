@@ -1,4 +1,40 @@
 body {
-    padding-top: 70px;
-    /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+}
+
+#main-header {
+    /*background-image: url('../images/header_images/header2.jpg');*/
+    color: #eeeeee;
+    background-size: 100%;
+    background-position: center;
+}
+
+.caption-full, .ratings {
+    padding: 5px 20px;
+}
+
+#article-header {
+    padding-top: 20px;
+}
+
+/*
+sub-category class
+works with bootstrap's list group to create an accordion
+*/
+.sub-category {
+    margin:0px;
+}
+
+.sub-category > .list-group-item{
+    background-color: #eeeeee;
+    border-radius: 0px;
+    border-bottom: none;
+}
+
+.sub-category > .list-group-item:hover{
+    background-color: #dddddd;
+}
+
+#world-name, #world-creator {
+    margin-bottom: 0px;
 }

@@ -64,7 +64,15 @@ works with bootstrap's list group to create an accordion
 }
 
 .detail {
-    margin: 0px;
+    margin: 2px;
+}
+
+.slick-prev:before, .slick-next:before { 
+    color:#aaaaaa !important;
+    font-size: 30px !important;
+    position: absolute !important;
+    top: -300%;
+    right: -5px;
 }
 
 @media screen and (max-width: 767px) {

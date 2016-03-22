@@ -3,6 +3,7 @@ LAYOUT.HTML
 Main layout file for Flask. Based on Bare by Start Bootstrap. 
 Contains the website navigation and footer.
 2/19/16 Created
+3/22/16 Added Slick Carousel links 
 ------------------------------------------------>
 
 <!DOCTYPE html>
@@ -15,18 +16,21 @@ Contains the website navigation and footer.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <title>Hephaestus</title>
     
     <!-- jQuery Version 1.12.1 -->
     <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-
-    <title>Hephaestus</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="../static/css/style.css" rel="stylesheet">
+    
+    <!-- Slick Carousel -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick-theme.css"/>
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -82,11 +86,6 @@ Contains the website navigation and footer.
     <!-- Page Content -->
     {% block content %}{% endblock %}
     
-    <script>
-            var images = ['header1.jpg', 'header2.jpg', 'header3.jpg', 'header4.jpg', 'header5.jpg', 'header6.jpg'];
-            $('#main-header').css('background-image', 'url(../static/images/header_images/' + images[Math.floor(Math.random() * images.length)] + ')');
-    </script>
-    
     <hr>
     
     <!-- Footer -->
@@ -101,12 +100,29 @@ Contains the website navigation and footer.
         </div>
     </footer>
 
-
-
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
     
+    <!-- Slick Carousel JavaScript -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.min.js"></script>
     
+    <!-- Carousel row script -->
+    <script>
+        $(document).ready(function(){
+            $('.item-carousel').slick({
+                infinite: true,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                arrows: true
+            });
+        });
+    </script>
+    
+    <!-- Random header image script -->
+    <script>
+        var images = ['header1.jpg', 'header2.jpg', 'header3.jpg', 'header4.jpg', 'header5.jpg', 'header6.jpg'];
+        $('#main-header').css('background-image', 'url(../static/images/header_images/' + images[Math.floor(Math.random() * images.length)] + ')');
+    </script>
 
 </body>
 

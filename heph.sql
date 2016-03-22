@@ -2,15 +2,18 @@ DROP DATABASE IF EXISTS hephaestus;
 CREATE DATABASE hephaestus;
 \c hephaestus;
 
+DROP TABLE IF EXISTS member CASCADE;
 CREATE TABLE member
 (
     UserID SERIAL NOT NULL,
     Username VARCHAR(20) NOT NULL,
     Email VARCHAR(60),
     DispEmail BOOLEAN DEFAULT False,
+    JoinDate DATE NOT NULL,
     PRIMARY KEY (UserID)
 );
 
+DROP TABLE IF EXISTS world CASCADE;
 CREATE TABLE world
 (
     WorldID SERIAL NOT NULL,
@@ -21,6 +24,7 @@ CREATE TABLE world
     FOREIGN KEY (CreatorID) REFERENCES member(UserID)
 );
 
+DROP TABLE IF EXISTS genre;
 CREATE TABLE genre
 (
     WorldID SERIAL NOT NULL,
@@ -28,6 +32,7 @@ CREATE TABLE genre
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
+DROP TABLE IF EXISTS userworlds;
 CREATE TABLE userworlds
 (
     WorldID SERIAL NOT NULL,
@@ -36,6 +41,7 @@ CREATE TABLE userworlds
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
+DROP TABLE IF EXISTS article;
 CREATE TABLE article
 (
     RecordID SERIAL NOT NULL,
@@ -46,6 +52,7 @@ CREATE TABLE article
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
+DROP TABLE IF EXISTS password;
 CREATE TABLE password
 (
     PassID SERIAL NOT NULL,
@@ -56,3 +63,6 @@ CREATE TABLE password
 
 CREATE USER heph WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, article, password TO heph;
+
+INSERT INTO member (Username, Email, DispEmail, JoinDate) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, now());
+INSERT INTO member (Username, Email, DispEmail, JoinDate) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, now());

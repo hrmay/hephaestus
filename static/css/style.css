@@ -49,6 +49,24 @@ works with bootstrap's list group to create an accordion
     padding:20px 5px 20px 5px;
 }
 
+#user-icon > img{
+    border-radius:10px;
+}
+
+.detail-block {
+    margin-bottom: 5px;
+    color: #aaaaaa;
+}
+
+.detail-block > svg{
+    float: left;
+    margin-right: 5px;
+}
+
+.detail {
+    margin: 0px;
+}
+
 @media screen and (max-width: 767px) {
     #main-header {
         background-size: auto 100%;

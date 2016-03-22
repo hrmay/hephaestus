@@ -15,14 +15,15 @@ def connectToDB():
 
 @app.route('/')
 def mainIndex():
-    header_img = random.randint(1,5);
-    return render_template("index.html", header_num = header_img);
+    return render_template("index.html");
     
-@app.route('/article_test')
+#@app.route('/article/'+world+'/'+category+'/'+article)
+@app.route('/article')
 def article():
     return render_template("article.html");
     
-@app.route('/user_test')
+#@app.route('/user/'+user)
+app.route('/user')
 def user():
     return render_template("user.html");
 

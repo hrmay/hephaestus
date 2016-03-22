@@ -48,3 +48,9 @@ works with bootstrap's list group to create an accordion
 #user-info {
     padding:20px 5px 20px 5px;
 }
+
+@media screen and (max-width: 767px) {
+    #main-header {
+        background-size: auto 100%;
+    }
+}

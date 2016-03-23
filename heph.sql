@@ -1,19 +1,34 @@
+--------------------------------------
+-- HEPH.SQL
+-- File that generates the necessary tables,
+-- roles, and test data for Hephaestus.
+--------------------------------------
+
 DROP DATABASE IF EXISTS hephaestus;
 CREATE DATABASE hephaestus;
 \c hephaestus;
 
+--Drop existing tables first
 DROP TABLE IF EXISTS member CASCADE;
+DROP TABLE IF EXISTS world CASCADE;
+DROP TABLE IF EXISTS category CASCADE;
+DROP TABLE IF EXISTS genre;
+DROP TABLE IF EXISTS userworlds;
+DROP TABLE IF EXISTS article;
+DROP TABLE IF EXISTS password;
+
+--Create tables
 CREATE TABLE member
 (
     UserID SERIAL NOT NULL,
     Username VARCHAR(20) NOT NULL,
     Email VARCHAR(60) NOT NULL,
     DispEmail BOOLEAN DEFAULT False,
-    JoinDate DATE NOT NULL,
+    UserDesc TEXT,
+    JoinDate DATE NOT NULL DEFAULT now(),
     PRIMARY KEY (UserID)
 );
 
-DROP TABLE IF EXISTS world CASCADE;
 CREATE TABLE world
 (
     WorldID SERIAL NOT NULL,
@@ -22,11 +37,11 @@ CREATE TABLE world
     Private BOOLEAN DEFAULT False,
     ShortDesc VARCHAR(140),
     LongDesc TEXT,
+    CreateDate DATE NOT NULL DEFAULT now(),
     PRIMARY KEY (WorldID),
     FOREIGN KEY (CreatorID) REFERENCES member(UserID)
 );
 
-DROP TABLE IF EXISTS genre;
 CREATE TABLE genre
 (
     WorldID SERIAL NOT NULL,
@@ -35,7 +50,6 @@ CREATE TABLE genre
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
-DROP TABLE IF EXISTS userworlds;
 CREATE TABLE userworlds
 (
     WorldID SERIAL NOT NULL,
@@ -44,7 +58,6 @@ CREATE TABLE userworlds
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
-DROP TABLE IF EXISTS category;
 CREATE TABLE category
 (
     CategoryID SERIAL NOT NULL,
@@ -54,7 +67,6 @@ CREATE TABLE category
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
-DROP TABLE IF EXISTS article;
 CREATE TABLE article
 (
     ArticleID SERIAL NOT NULL,
@@ -62,12 +74,12 @@ CREATE TABLE article
     CategoryID SERIAL NOT NULL,
     Name VARCHAR(50) DEFAULT 'Unnamed',
     Body TEXT,
+    CreateDate DATE NOT NULL DEFAULT now(),
     PRIMARY KEY (ArticleID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID),
     FOREIGN KEY (CategoryID) REFERENCES category(CategoryID)
 );
 
-DROP TABLE IF EXISTS password;
 CREATE TABLE password
 (
     PassID SERIAL NOT NULL,
@@ -76,12 +88,17 @@ CREATE TABLE password
     FOREIGN KEY (PassID) REFERENCES member(UserID)
 );
 
+--Create heph user and grant privileges
+DROP USER IF EXISTS heph;
 CREATE USER heph WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, category, article, password TO heph;
 GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO heph;
 
-INSERT INTO member (Username, Email, DispEmail, JoinDate) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, now());
-INSERT INTO member (Username, Email, DispEmail, JoinDate) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, now());
+--Create pass role to access passwords
+
+
+INSERT INTO member (Username, Email, DispEmail) VALUES ('Marty', 'mmclark317@gmail.com', TRUE);
+INSERT INTO member (Username, Email, DispEmail) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE);
 
 INSERT INTO world (CreatorID, Name, ShortDesc, LongDesc) VALUES 
     ((SELECT member.UserID FROM member WHERE member.Username = 'Evan'), 

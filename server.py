@@ -9,10 +9,9 @@ app = Flask(__name__)
 def formatDate(date):
     #Get those months
     months = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
-    newDate = "";
     
     splitDate = str(date).split("-");
-    newDate += months[int(splitDate[1])-1];
+    newDate = months[int(splitDate[1])-1];
     newDate += " " + str(splitDate[2]);
     newDate += ", " + str(splitDate[0]);
     

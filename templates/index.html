@@ -29,11 +29,11 @@ front page.
         <div class="row item-carousel">
             {% for num in range(5)%}
             <div class="col-md-4 portfolio-item">
-                <a href="#">
+                <a href="/world/{{worldID}}">
                     <img class="img-responsive" src="http://placehold.it/700x400" alt="">
                 </a>
                 <h3>
-                    <a href="#">{{world[0][0][0]}}</a>
+                    <a href="/world/{{worldID}}">{{world[0][0][0]}}</a>
                 </h3>
                 <p>{{world_desc}}</p>
             </div>

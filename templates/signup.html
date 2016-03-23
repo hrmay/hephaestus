@@ -1,0 +1,65 @@
+<!-----------------------------------------------
+SIGNUP.HTML
+Sign up page for Hephaestus.
+3/22/16 Created
+------------------------------------------------>
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="container">
+        
+        <!-- Jumbotron header -->
+        <header class="jumbotron hero-spacer" id="main-header">
+            <h1>Sign Up</h1>
+            <p>Thanks for joining us! Please give us a username you'd like, your email, and your password. Keep in mind that both usernames and emails are unique and <i>not</i> case sensitive.</p>
+        </header>
+        
+        <!-- Form -->
+        <form class="form-horizontal" method="POST" action="/signup1">
+            <fieldset>
+            
+            <!-- Text input-->
+            <div class="form-group row">
+              <div class="col-md-4 col-md-offset-4">
+              <input id="username" name="username" type="text" placeholder="Username" class="form-control input-md" required="">
+                
+              </div>
+            </div>
+            
+            <!-- Text input-->
+            <div class="form-group row">
+              <div class="col-md-4 col-md-offset-4">
+              <input id="email" name="email" type="text" placeholder="Email" class="form-control input-md">
+                
+              </div>
+            </div>
+            
+            <!-- Password input-->
+            <div class="form-group row">
+              <div class="col-md-4 col-md-offset-4">
+                <input id="password" name="password" type="password" placeholder="Password" class="form-control input-md" required="">
+                
+              </div>
+            </div>
+            
+            <!-- Password input-->
+            <div class="form-group row">
+              <div class="col-md-4 col-md-offset-4">
+                <input id="confirm_password" name="confirm_password" type="password" placeholder="Confirm Password" class="form-control input-md" required="">
+                
+              </div>
+            </div>
+            
+            <!-- Button -->
+            <div class="form-group row col-centered">
+                <button id="submit" name="submit" class="btn btn-primary col-centered">Sign Up</button>
+            </div>
+            
+            </fieldset>
+        </form>
+            
+    </div>
+
+{% endblock %}

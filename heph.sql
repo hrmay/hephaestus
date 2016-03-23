@@ -7,7 +7,7 @@ CREATE TABLE member
 (
     UserID SERIAL NOT NULL,
     Username VARCHAR(20) NOT NULL,
-    Email VARCHAR(60),
+    Email VARCHAR(60) NOT NULL,
     DispEmail BOOLEAN DEFAULT False,
     JoinDate DATE NOT NULL,
     PRIMARY KEY (UserID)
@@ -63,6 +63,7 @@ CREATE TABLE password
 
 CREATE USER heph WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, article, password TO heph;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO heph;
 
 INSERT INTO member (Username, Email, DispEmail, JoinDate) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, now());
 INSERT INTO member (Username, Email, DispEmail, JoinDate) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, now());

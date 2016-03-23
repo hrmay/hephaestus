@@ -8,14 +8,11 @@ Setup
 -----
 
 After downloading the respository on your server, you'll need to install Flask and psycopg2.
-* To install Flask in Cloud9:
 
 
+    #To install Flask in Cloud9:
     sudo easy_install Flask
-
-* To install psycopg2 in Cloud9: 
-
-
+    #To install psycopg2 in Cloud9: 
     sudo apt-get install python-psycopg2
     
 This application uses a Postgres database. For Cloud9 users, the following should setup your database:

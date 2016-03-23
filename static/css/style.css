@@ -75,6 +75,12 @@ works with bootstrap's list group to create an accordion
     right: -5px;
 }
 
+.col-centered {
+    float: none !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+}
+
 @media screen and (max-width: 767px) {
     #main-header {
         background-size: auto 100%;

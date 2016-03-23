@@ -1,0 +1,60 @@
+<!-----------------------------------------------
+ARTICLE.HTML
+World article template based on templates by Start
+Bootstrap. Contains a summary of the world, a navigation
+of all available categories/articles for the session user,
+and the article content.
+3/16/16 Created
+------------------------------------------------>
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="panel panel-default" id="world-summary">
+                    <div class="panel-heading">
+                        <p id="world-name" class="lead">{{world_info[0][0][0]}}</p>
+                        <p id="world-creator" class="small">{{world_info[0][0][1]}}</p>
+                    </div>
+                    <div class="panel-body">
+                        <p class="btn btn-primary" id="world-categories">{{world_info[0][0][2]}} Categories</p>
+                        <p class="btn btn-primary" id="world-records">{{world_info[0][0][3]}} Articles</p>
+                    </div>
+                </div>
+                
+                <div class="list-group" id="world-nav">
+                    {% for category in world_info[1] %}
+                        <a class="list-group-item">{{category}}</a>
+                        <div class="list-group sub-category">
+                            {% for article in world_info[1][category] %}
+                                <a href="/world/1/{{category}}/{{article}}" class="list-group-item">{{article}}</a>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <!--a class="list-group-item">How does this look</a>
+                    <a class="list-group-item">And this</a>
+                    <a class="list-group-item">And this</a>
+                    <a class="list-group-item">And this</a>
+                    <a class="list-group-item">Subcategories below</a>
+                        <div class="list-group sub-category">
+                            <a class="list-group-item">One</a>
+                            <a class="list-group-item">Two</a>
+                            <a class="list-group-item">Three</a>
+                        </div>
+                    <a class="list-group-item">Continuing the list</a-->
+                </div>
+            </div>
+            {% block stuff %}{% endblock %}
+            
+
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+{% endblock %}

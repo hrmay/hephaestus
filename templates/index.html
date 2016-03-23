@@ -20,6 +20,30 @@ front page.
         <!-- Page Header -->
         <div class="row">
             <div class="col-lg-12">
+                <h2 class="page-header">Featured</h2>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <!-- Projects Row -->
+        <div class="row item-carousel">
+            {% for num in range(5)%}
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">{{world[0][0][0]}}</a>
+                </h3>
+                <p>{{world_desc}}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- /.row -->
+        
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-lg-12">
                 <h2 class="page-header">Fantasy</h2>
             </div>
         </div>

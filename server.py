@@ -27,9 +27,10 @@ def connectToDB():
 
 @app.route('/')
 def mainIndex():
-    world_results = worldinfo('1')
-    description = worlddesc('1')
-    return render_template("index.html", world=world_results, world_desc = description[0][0]);
+    worldid = '1'
+    world_results = worldinfo(worldid)
+    description = worlddesc(worldid)
+    return render_template("index.html", world=world_results, world_desc = description[0][0], worldID = worldid);
     
 @app.route('/article')
 def articletest():
@@ -119,8 +120,7 @@ def world(worldid):
     #grab article names
     
     
-    
-    return render_template("worlddata.html", world_info = results, world_description=description[0][0]);
+    return render_template("world.html", world_info = results, world_description=description[0][0]);
 
 @app.route('/world/<worldID>/<articlename>')
 def article(worldid, articlename):

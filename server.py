@@ -118,8 +118,9 @@ def world(worldid):
     
     #grab article names
     
+    color = "#aaaaaa"
     
-    return render_template("world.html", world_info = results, world_description=description[0][0]);
+    return render_template("world.html", world_info = results, world_description=description[0][0], color = color);
 
 @app.route('/world/<worldID>/<articlename>')
 def article(worldid, articlename):

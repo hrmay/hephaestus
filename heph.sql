@@ -46,6 +46,7 @@ CREATE TABLE genre
 (
     WorldID SERIAL NOT NULL,
     Genre VARCHAR(20),
+    PrimaryGenre BOOLEAN DEFAULT False,
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
@@ -110,6 +111,7 @@ INSERT INTO category (WorldID, Name) VALUES
     ((SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.Name = 'Earth' AND member.Username = 'Evan'),
     'Continents'
     );
+    
 INSERT INTO category (WorldID, Name) VALUES 
     ((SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.Name = 'Earth' AND member.Username = 'Evan'),
     'Countries'
@@ -143,7 +145,19 @@ INSERT INTO article (WorldID, CategoryID, Name, Body) VALUES
     'Canada is a country in the northern part of North America. Its ten provinces and three territories extend from the Atlantic to the Pacific and northward into the Arctic Ocean, covering 9.98 million square kilometres (3.85 million square miles), making it the world''s second-largest country by total area and the fourth-largest country by land area.'
     );
     
-INSERT INTO genre (WorldID, Genre) VALUES
+INSERT INTO genre (WorldID, Genre, PrimaryGenre) VALUES
     ((SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.Name = 'Earth' AND member.Username = 'Evan'),
-    'Modern'
+    'Modern',
+    True
+    );
+
+INSERT INTO userworlds (WorldID, UserID, Role) VALUES
+    ((SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.Name = 'Earth' AND member.Username = 'Evan'),
+    (SELECT member.UserID FROM member WHERE member.Username = 'Evan'),
+    'Creator'
+    );
+    
+INSERT INTO userworlds (WorldID, UserID) VALUES
+    ((SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.Name = 'Earth' AND member.Username = 'Evan'),
+    (SELECT member.UserID FROM member WHERE member.Username = 'Marty')
     );

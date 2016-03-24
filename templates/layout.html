@@ -23,10 +23,10 @@ Contains the website navigation and footer.
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
     <!-- Bootstrap Core CSS -->
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="../static/css/style.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     
     <!-- Slick Carousel -->
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/>
@@ -38,6 +38,9 @@ Contains the website navigation and footer.
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{url_for('static', filename='images/favicon.ico') }}">
     
 </head>
 

@@ -98,7 +98,7 @@ def world(worldid):
     
     description = worlddesc(worldid)
     
-    return render_template("world.html", world_info = results, world_description=description[0][0]);
+    return render_template("world.html", world_info = results, world_description=description[0][0], color="#aaaaaa");
 
 #-------------------
 #  End World
@@ -132,7 +132,7 @@ def article(worldid, categoryname, articlename):
     world_results = worldinfo(worldid)
     article_results = articledesc(worldid, categoryname, articlename)
     
-    return render_template("article.html", world_info = world_results, article_description = article_results);
+    return render_template("article.html", world_info = world_results, article_description = article_results, color="#aaaaaa");
 
 #-------------------
 #  End Article

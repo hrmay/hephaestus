@@ -15,6 +15,19 @@ body {
     background-position: center;
 }
 
+.logo {
+    float:left;
+    margin:10px;
+    fill:#aa0000;
+    transition:300ms;
+}
+
+.logo:hover {
+    fill:#cc0000;
+    transition:300ms;
+}
+
+
 .caption-full, .ratings {
     padding: 5px 20px;
 }

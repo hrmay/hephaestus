@@ -81,8 +81,18 @@ works with bootstrap's list group to create an accordion
     text-align: center !important;
 }
 
+#logo {
+    height: 30px;
+    width: 30px;
+    margin: 10px;
+}
+
 @media screen and (max-width: 767px) {
     #main-header {
         background-size: auto 100%;
     }
 }
+
+.accordion-toggle {cursor: pointer;}
+.accordion-content {display: none;}
+.accordion-content.default {display: block;}

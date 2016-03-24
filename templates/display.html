@@ -41,8 +41,8 @@ article page.
                 
                 <div class="list-group" id="world-nav">
                     {% for category in world_info[1] %}
-                        <a class="list-group-item">{{category}}</a>
-                        <div class="list-group sub-category">
+                        <a class="list-group-item accordion-toggle">{{category}}</a>
+                        <div class="list-group sub-category accordion-content">
                             {% for article in world_info[1][category] %}
                                 <a href="/world/1/{{category}}/{{article}}" class="list-group-item">{{article}}</a>
                             {% endfor %}

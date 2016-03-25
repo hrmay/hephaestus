@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import random
 import psycopg2
 import psycopg2.extras
@@ -70,7 +70,6 @@ def worldinfo(worldid):
     
     ca_results = {}
     for category in category_results:
-        print(category)
         if category[0] in ca_results:
             ca_results[category[0]].append(category[1])
         else:
@@ -174,7 +173,7 @@ def user(username):
 #-------------------
 @app.route('/signup')
 def signup():
-    return render_template('signup.html')
+    return render_template('signup.html', errors=None)
 
 @app.route('/signup1', methods=['POST'])
 def signup1():
@@ -191,7 +190,8 @@ def signup1():
     try:
         #Check that no one has this username or this email
         cur.execute("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query)
-        results = cur.fetchall();
+        print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
+        results = cur.fetchall()
     except:
         print("Failed to execute the following: ")
         print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
@@ -202,25 +202,29 @@ def signup1():
     
     if len(results) >= 1:
         for result in results:
-            if result[0] == query['username']:
-                u_exists = False;
-            if results[1] == query['email']:
-                e_exists = False;
+            if result[0].lower() == query['username'].lower():
+                u_free = False;
+            if result[1].lower() == query['email'].lower():
+                e_free = False;
         
     #Check that passwords match
     p_match = (query['password'] == query['confirm_password'])
     all_okay = (p_match and u_free and e_free)
     
-    if (request.method == 'POST' and all_okay):
+    if (request.method == 'POST' and all_okay == True):
         try:
             cur.execute("""INSERT INTO member (username, email, joindate) VALUES (%(username)s, %(email)s, now());""", query)
         except:
             print("Failed to execute the following: ")
             print(cur.mogrify("""INSERT INTO member (username, email, joindate) VALUES (%(username)s, %(email)s, now());""", query))
             conn.rollback()
-        conn.commit()
+    else:
+        return render_template("signup.html", errors = [u_free, e_free, p_match]);
         
-    return render_template("signup.html");
+    conn.commit()    
+    
+    return redirect(url_for('mainIndex'))
+    
 #-------------------
 #  End Signup
 #-------------------

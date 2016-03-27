@@ -36,8 +36,9 @@ Contains the website navigation and footer.
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick-theme.css"/>
     
-    <!-- Accordion -->
+    <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/accordion.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/login_modal.js') }}"></script>
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -86,8 +87,22 @@ Contains the website navigation and footer.
                     </li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    <li>
-                        <a href="#">Login</a>  <!-- Login page -->
+                    <li ng-controller="MainCtrl">
+                        <a href="" ng-click="toggleModal()">Login</a>  <!-- Login page -->
+                        
+                        <modal title="Login form" visible="showModal">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="email">Email address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Enter email" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Password" />
+                                </div>
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </form>
+                        </modal>
                     </li>
                 </ul>
             </div>

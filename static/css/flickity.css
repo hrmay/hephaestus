@@ -46,7 +46,7 @@ http://flickity.metafizzy.co
 
 .flickity-prev-next-button {
   position: absolute;
-  top: 50%;
+  top: 99px;
   width: 44px;
   height: 44px;
   border: none;

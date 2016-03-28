@@ -96,8 +96,32 @@ works with bootstrap's list group to create an accordion
     #main-header {
         background-size: auto 100%;
     }
+    
+    .carousel {
+        width: 100%;
+        float: none !important;
+        margin: 0 auto !important;
+        /*text-align: center !important;*/
+    }    
+    
+    .carousel-cell {
+        width: 100% !important;
+    }
+    
+    .flickity-prev-next-button {
+        display: none;
+    }
 }
 
 .accordion-toggle {cursor: pointer;}
 .accordion-content {display: none;}
 .accordion-content.default {display: block;}
+
+.carousel {
+    height: 350px;
+    width: 100%;
+}
+
+.carousel-cell {
+    width: 33%;
+}

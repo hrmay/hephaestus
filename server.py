@@ -1,3 +1,9 @@
+#------------------------------------
+# SERVER.PY
+# Python file for all of the app
+# routes and algorithms and such.
+#------------------------------------
+
 import os
 from flask import Flask, render_template, request, redirect, url_for, session
 import random
@@ -20,8 +26,8 @@ def formatDate(date):
     return newDate;
     
 def connectToDB():
-    #connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
-    connectionString = 'dbname=hephaestus user=postgres password=password host=localhost'
+    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
+
     try:
         return psycopg2.connect(connectionString)
     except:
@@ -38,9 +44,9 @@ def mainIndex():
 def articletest():
      return render_template("article.html");
 
-#-------------------
+#------------------------------------
 #  World Routes
-#-------------------
+#------------------------------------
 
 #Grabs info for world to be displayed on sidebar of worlds and articles     
 def worldinfo(worldid):
@@ -106,14 +112,14 @@ def world(worldid):
     
     return render_template("world.html", world_info = results, world_description=description[0][0], color="#aaaaaa");
 
-#-------------------
+#------------------------------------
 #  End World
-#-------------------
+#------------------------------------
 
 
-#-------------------
+#------------------------------------
 #  Article Routes
-#-------------------
+#------------------------------------
 
 #Grabs information to display an article
 def articledesc(worldid, categoryname, articlename):
@@ -140,13 +146,13 @@ def article(worldid, categoryname, articlename):
     
     return render_template("article.html", world_info = world_results, article_description = article_results, color="#aaaaaa");
 
-#-------------------
+#------------------------------------
 #  End Article
-#-------------------
+#------------------------------------
 
-#-------------------
+#------------------------------------
 #  User Routes
-#-------------------
+#------------------------------------
     
 @app.route('/user/<username>', methods=['GET'])
 def user(username):
@@ -193,14 +199,14 @@ def user(username):
     
     return render_template("user.html", user_info = results, color=color, worlds=worlds);
 
-#-------------------
+#------------------------------------
 #  End User
-#-------------------
+#------------------------------------
 
 
-#-------------------
+#------------------------------------
 #  Signup Routes
-#-------------------
+#------------------------------------
 @app.route('/signup')
 def signup():
     return render_template('signup.html', errors=None)
@@ -248,6 +254,7 @@ def signup1():
             print("Failed to execute the following: ")
             print(cur.mogrify("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query))
             conn.rollback()
+            return render_template("signup.html", errors = None) #Fix this later to give a message
     else:
         return render_template("signup.html", errors = [u_free, e_free, p_match]);
         
@@ -255,10 +262,40 @@ def signup1():
     
     return redirect(url_for('mainIndex'))
     
-#-------------------
+#------------------------------------
 #  End Signup
-#-------------------
+#------------------------------------
 
+#------------------------------------
+#  Login Route
+#------------------------------------
+
+@app.route('/login', methods=['GET'])
+def login():
+    #Database connection
+    conn = connectToDB()
+    cur = conn.cursor()
+    query = {
+        'username' : request.form['username_login'],
+        'password' : request.form['password_login'],
+    }
+    rule = request.url_rule #Get the page to redirect to if login succeeds
+    print('Rule: ' + rule)
+    
+    if (request.method == 'GET'):
+        try:
+            cur.execute("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s)""", query)
+        except:
+            print(cur.mogrify("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s)""", query))
+            return render_template("login.html")
+    else:
+        return redirect()
+        
+    return redirect(url_for(rule));
+    
+#------------------------------------
+#  End Login
+#------------------------------------
 
 if __name__ == '__main__':
     app.run(host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug = True)

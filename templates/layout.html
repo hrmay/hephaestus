@@ -55,6 +55,8 @@ Contains the website navigation and footer.
     <!-- Modal -->
     <div id="loginModal" class="modal fade" role="dialog">
     <div class="modal-dialog" >
+        <form class="form-horizontal" method="GET" action="/login">
+        <fieldset>
     
         <!-- Modal content-->
         <div class="modal-content">
@@ -64,10 +66,7 @@ Contains the website navigation and footer.
             </div>
             
             <!-- Begin form -->
-            
-            <form method="POST" action="/">
-            <fieldset>
-            
+        
             <div class="modal-body">
                 
                 <!-- Username input -->
@@ -88,16 +87,17 @@ Contains the website navigation and footer.
                 <p class="col-centered"><a href="/signup">Don't have an account? Sign up here!</a></p>
             </div>
                 
-            <div class="modal-footer col-centered">
-                <button type="button" class="btn btn-primary">Login</button>
+            <div class="modal-footer col-centered form-group">
+                <button id="login_button" name="login_button" type="submit" class="btn btn-primary">Login</button>
             </div>
-                
-            </fieldset>
-            </form>
+            
         </div>
+        
+        </fieldset>
+        </form>
     </div>
     </div>
-    <!-- ./modal -->
+    <!-- End Modal -->
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">

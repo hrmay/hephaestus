@@ -1,4 +1,4 @@
-var mymodal = angular.module('mymodal', []);
+var mymodal = angular.module('myModal', []);
 
 mymodal.controller('MainCtrl', function ($scope) {
     $scope.showModal = false;

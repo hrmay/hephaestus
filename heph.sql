@@ -83,7 +83,6 @@ CREATE TABLE article
 CREATE TABLE password
 (
     PassID SERIAL NOT NULL,
-    Salt VARCHAR(128) NOT NULL,
     Password TEXT NOT NULL,
     FOREIGN KEY (PassID) REFERENCES member(UserID)
 );

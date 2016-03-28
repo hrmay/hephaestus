@@ -80,14 +80,6 @@ works with bootstrap's list group to create an accordion
     margin: 2px;
 }
 
-.slick-prev:before, .slick-next:before { 
-    color:#aaaaaa !important;
-    font-size: 30px !important;
-    position: absolute !important;
-    top: -300%;
-    right: -5px;
-}
-
 .col-centered {
     float: none !important;
     margin: 0 auto !important;

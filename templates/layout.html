@@ -32,13 +32,12 @@ Contains the website navigation and footer.
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     
-    <!-- Slick Carousel -->
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/>
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.9/slick-theme.css"/>
+    <!-- Flickity -->
+    <link href="{{ url_for('static', filename='css/flickity.css') }}" rel="stylesheet" media="screen">
+    <script src="{{ url_for('static', filename='js/flickity.pkgd.min.js') }}"></script>
     
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/accordion.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/login_modal.js') }}"></script>
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

@@ -1,10 +1,12 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import random
 import psycopg2
 import psycopg2.extras
 
 app = Flask(__name__)
+
+app.secret_key = os.urandom(24).encode('hex')
 
 def formatDate(date):
     #Get those months
@@ -18,7 +20,8 @@ def formatDate(date):
     return newDate;
     
 def connectToDB():
-    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
+    #connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
+    connectionString = 'dbname=hephaestus user=postgres password=password host=localhost'
     try:
         return psycopg2.connect(connectionString)
     except:
@@ -240,10 +243,10 @@ def signup1():
     
     if (request.method == 'POST' and all_okay == True):
         try:
-            cur.execute("""INSERT INTO member (username, email, joindate) VALUES (%(username)s, %(email)s, now());""", query)
+            cur.execute("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query)
         except:
             print("Failed to execute the following: ")
-            print(cur.mogrify("""INSERT INTO member (username, email, joindate) VALUES (%(username)s, %(email)s, now());""", query))
+            print(cur.mogrify("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query))
             conn.rollback()
     else:
         return render_template("signup.html", errors = [u_free, e_free, p_match]);

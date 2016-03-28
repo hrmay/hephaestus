@@ -15,7 +15,6 @@ DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS genre;
 DROP TABLE IF EXISTS userworlds;
 DROP TABLE IF EXISTS article;
-DROP TABLE IF EXISTS password;
 
 --Create tables
 CREATE TABLE member
@@ -24,6 +23,7 @@ CREATE TABLE member
     Username VARCHAR(20) NOT NULL,
     Email VARCHAR(60) NOT NULL,
     DispEmail BOOLEAN DEFAULT False,
+    Password TEXT NOT NULL,
     UserDesc TEXT,
     JoinDate DATE NOT NULL DEFAULT now(),
     PRIMARY KEY (UserID)
@@ -80,24 +80,19 @@ CREATE TABLE article
     FOREIGN KEY (CategoryID) REFERENCES category(CategoryID)
 );
 
-CREATE TABLE password
-(
-    PassID SERIAL NOT NULL,
-    Password TEXT NOT NULL,
-    FOREIGN KEY (PassID) REFERENCES member(UserID)
-);
 
 --Create heph user and grant privileges
 DROP USER IF EXISTS heph;
 CREATE USER heph WITH PASSWORD '4SrGY9gPFU72aJxh';
-GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, category, article, password TO heph;
+GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, category, article TO heph;
 GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO heph;
+CREATE EXTENSION pgcrypto;
+
 
 --Create pass role to access passwords
 
-
-INSERT INTO member (Username, Email, DispEmail) VALUES ('Marty', 'mmclark317@gmail.com', TRUE);
-INSERT INTO member (Username, Email, DispEmail) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE);
+INSERT INTO member (Username, Email, DispEmail, Password) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, crypt('123456', gen_salt('bf')));
+INSERT INTO member (Username, Email, DispEmail, Password) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, crypt('password', gen_salt('bf')));
 
 INSERT INTO world (CreatorID, Name, ShortDesc, LongDesc) VALUES 
     ((SELECT member.UserID FROM member WHERE member.Username = 'Evan'), 

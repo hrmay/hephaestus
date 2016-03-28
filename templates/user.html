@@ -87,18 +87,22 @@ and the article content.
             
             <!-- Projects Row -->
             <div class="row carousel js-flickity"
-                data-flickity-options='{ "wrapAround": true, "pageDots": false }'>
-                {% for num in range(5)%}
-                <div class="col-md-4 carousel-cell">
-                    <a href="#">
-                        <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                    </a>
-                    <h3>
-                        <a href="#">World Name</a>
-                    </h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-                </div>
-                {% endfor %}
+                data-flickity-options='{ "wrapAround": true, "pageDots": false, "setGallerySize": false}'>
+                {% if worlds|length > 0 %}
+                    {% for world in worlds %}
+                    <div class="col-md-4 carousel-cell">
+                        <a href="#">
+                            <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                        </a>
+                        <h3>
+                            <a href="#">{{world[0]}}</a>
+                        </h3>
+                        <p>{{world[1]}}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No worlds to display!</p>
+                {% endif %}
             </div>
                 
             <!-- Page Header -->
@@ -111,7 +115,7 @@ and the article content.
             
             <!-- Projects Row -->
             <div class="row carousel js-flickity"
-                data-flickity-options='{ "wrapAround": true, "pageDots": false}'>
+                data-flickity-options='{ "wrapAround": true, "pageDots": false, "setGallerySize": false}'>
                 {% for num in range(5)%}
                 <div class="col-md-4 carousel-cell">
                     <a href="#">

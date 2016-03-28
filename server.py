@@ -44,20 +44,22 @@ def worldinfo(worldid):
     conn = connectToDB()
     cur = conn.cursor()
     
+    query = {'worldid': worldid}
+    
     #grab world info
     try:
-        cur.execute("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), genre.Genre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN genre ON (world.WorldID = genre.WorldID) WHERE world.WorldID = %s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", worldid)
+        cur.execute("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), genre.Genre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN genre ON (world.WorldID = genre.WorldID) WHERE world.WorldID = %(worldid)s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", query)
     except:
         print("ERROR executing SELECT")
-        print(cur.mogrify("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID) FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) WHERE world.WorldID = %s GROUP BY world.Name, member.Username;""", worldid))
+        print(cur.mogrify("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID) FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) WHERE world.WorldID = %(worldid)s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", query))
     world_results = cur.fetchall()
     
     #grab category names
     try:
-        cur.execute("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %s ORDER BY category.Name, article.Name;""", worldid)
+        cur.execute("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query)
     except:
         print("ERROR executing SELECT")
-        print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %s;""", worldid))
+        print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query))
     category_results = cur.fetchall()
     
     #grab article names
@@ -83,8 +85,10 @@ def worlddesc(worldid):
     conn = connectToDB()
     cur = conn.cursor()
     
+    query = {'worldid': worldid}
+    
     try:
-        cur.execute("""SELECT LongDesc FROM world WHERE WorldID = %s;""", worldid)
+        cur.execute("""SELECT LongDesc FROM world WHERE WorldID = %(worldid)s;""", query)
     except:
         print("ERROR executing SELECT")
     
@@ -120,7 +124,7 @@ def articledesc(worldid, categoryname, articlename):
         cur.execute("""SELECT article.Name, article.Body FROM article JOIN category ON (article.CategoryID = category.CategoryID) JOIN world ON (article.WorldID = world.WorldID) WHERE world.WorldID = %(world)s AND category.Name = %(category)s AND article.Name = %(article)s;""", query)
     except:
         print("ERROR executing SELECT")
-        print(cur.mogrify("""SELECT article.Name, article.Body FROM article JOIN category ON (article.CategoryID = category.CategoryID) JOIN world ON (article.WorldID = world.WorldID) WHERE world.WorldID = %s AND category.Name = %s AND article.Name = %s;"""))
+        print(cur.mogrify("""SELECT article.Name, article.Body FROM article JOIN category ON (article.CategoryID = category.CategoryID) JOIN world ON (article.WorldID = world.WorldID) WHERE world.WorldID = %(world)s AND category.Name = %(category)s AND article.Name = %(article)s;""", query))
 
     description = cur.fetchall()
     
@@ -159,9 +163,32 @@ def user(username):
             print(cur.mogrify("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username)))
             results = None;
         
+        try:
+            query = {'username':username}
+            cur.execute("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query);
+            worldid_results = cur.fetchall()
+            print(worldid_results[0])
+        except:
+            print("ERROR executing SELECT")
+            print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
+
+        worlds = []
+        if len(worldid_results) > 0:
+            worldid_results = worldid_results[0];
+            print(worldid_results)
+            for worldid in worldid_results:
+                print(worldid)
+                worldname = worldinfo(worldid)[0][0][0]
+                worlddescription = worlddesc(worldid)[0][0]
+                world = [worldname, worlddescription]
+                worlds.append(world)
+                print(worlds)
+        
+        
+        
         color="#aaaaaa";
     
-    return render_template("user.html", user_info = results, color=color);
+    return render_template("user.html", user_info = results, color=color, worlds=worlds);
 
 #-------------------
 #  End User

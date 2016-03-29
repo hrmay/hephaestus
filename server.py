@@ -20,8 +20,7 @@ def formatDate(date):
     return newDate;
     
 def connectToDB():
-    #connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
-    connectionString = 'dbname=hephaestus user=postgres password=password host=localhost'
+    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
     try:
         return psycopg2.connect(connectionString)
     except:
@@ -32,7 +31,7 @@ def mainIndex():
     worldid = '1'
     world_results = worldinfo(worldid)
     description = worlddesc(worldid)
-    return render_template("index.html", world=world_results, world_desc = description[0][0], worldID = worldid);
+    return render_template("index.html", world=world_results, world_desc = description[0][1], worldID = worldid);
     
 @app.route('/article')
 def articletest():
@@ -65,14 +64,6 @@ def worldinfo(worldid):
         print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query))
     category_results = cur.fetchall()
     
-    #grab article names
-#    try:
-#        cur.execute("""SELECT article.Name FROM article JOIN world ON (article.WorldID = world.WorldID) WHERE world.WorldID = %s;""", worldid)
-#    except:
-#        print("ERROR executing SELECT")
-#        print(cur.mogrify("""SELECT article.Name FROM article JOIN world ON (article.WorldID = world.WorldID) WHERE world.WorldID = %s;""", worldid))
-#    article_results = cur.fetchall()
-    
     ca_results = {}
     for category in category_results:
         if category[0] in ca_results:
@@ -91,7 +82,7 @@ def worlddesc(worldid):
     query = {'worldid': worldid}
     
     try:
-        cur.execute("""SELECT LongDesc FROM world WHERE WorldID = %(worldid)s;""", query)
+        cur.execute("""SELECT LongDesc, ShortDesc FROM world WHERE WorldID = %(worldid)s;""", query)
     except:
         print("ERROR executing SELECT")
     
@@ -166,6 +157,7 @@ def user(username):
             print(cur.mogrify("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username)))
             results = None;
         
+        #Get user's created worlds
         try:
             query = {'username':username}
             cur.execute("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query);
@@ -176,6 +168,28 @@ def user(username):
             print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
 
         worlds = []
+        if len(worldid_results) > 0:
+            worldid_results = worldid_results[0];
+            print(worldid_results)
+            for worldid in worldid_results:
+                print(worldid)
+                worldname = worldinfo(worldid)[0][0][0]
+                worlddescription = worlddesc(worldid)[0][0]
+                world = [worldname, worlddescription]
+                worlds.append(world)
+                print(worlds)
+
+        #Get user's collaborative worlds
+        try:
+            query = {'username':username}
+            cur.execute("""SELECT world.WorldID FROM world JOIN userworlds ON (world.WorldID = userworlds.UserID) JOIN member ON (userworlds.UserID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s) AND userworlds.Role = 'Editor';""", query);
+            worldid_results = cur.fetchall()
+            print(worldid_results[0])
+        except:
+            print("ERROR executing SELECT")
+            print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
+
+        collab_worlds = []
         if len(worldid_results) > 0:
             worldid_results = worldid_results[0];
             print(worldid_results)

@@ -80,6 +80,13 @@ CREATE TABLE article
     FOREIGN KEY (CategoryID) REFERENCES category(CategoryID)
 );
 
+CREATE TABLE featured
+(
+    FeaturedID INT NOT NULL DEFAULT 5,
+    WorldID SERIAL NOT NULL,
+    PRIMARY KEY (FeaturedID),
+    FOREIGN KEY (WorldID) REFERENCES world(WorldID)
+);
 
 --Create heph user and grant privileges
 DROP USER IF EXISTS heph;

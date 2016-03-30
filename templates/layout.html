@@ -52,10 +52,11 @@ Contains the website navigation and footer.
 </head>
 
 <body>
+    {% if user['username'] == '' %}
     <!-- Modal -->
     <div id="loginModal" class="modal fade" role="dialog">
     <div class="modal-dialog" >
-        <form class="form-horizontal" method="GET" action="/login">
+        <form class="form-horizontal" method="POST" action="/login">
         <fieldset>
     
         <!-- Modal content-->
@@ -83,6 +84,16 @@ Contains the website navigation and footer.
                     </div>
                 </div>  
                 
+                <!-- used to redirect user to current page -->
+                <input name="login_redirect" type="hidden" id="login_redirect">
+                
+                <script>
+                    $(document).ready(function() {
+                        var currentURL =  window.location.href; 
+                        $("#login_redirect").val(currentURL);
+                    });
+                </script>
+                
                 <!--<p class="col-centered"><a href="/help">Forgot your password?</a></p>-->
                 <p class="col-centered"><a href="/signup">Don't have an account? Sign up here!</a></p>
             </div>
@@ -91,6 +102,8 @@ Contains the website navigation and footer.
                 <button id="login_button" name="login_button" type="submit" class="btn btn-primary">Login</button>
             </div>
             
+            
+            
         </div>
         
         </fieldset>
@@ -98,6 +111,8 @@ Contains the website navigation and footer.
     </div>
     </div>
     <!-- End Modal -->
+    {% endif %}
+        
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -133,7 +148,11 @@ Contains the website navigation and footer.
                 </ul>
                 <ul class="nav navbar-nav pull-right">
                     <li>
+                    {% if user['username'] == '' %}
                         <a href="#loginModal" data-toggle="modal" data-target="#loginModal">Login</a>  <!-- Login modal linked here -->
+                    {% else %}
+                        <p style="color:white">Hello, {{user['username']}}!</p>
+                    {% endif %}
                     </li>
                 </ul>
             </div>

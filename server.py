@@ -14,6 +14,9 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(24).encode('hex')
 
+#----------------------
+# FORMAT DATE
+#----------------------
 def formatDate(date):
     #Get those months
     months = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
@@ -24,33 +27,34 @@ def formatDate(date):
     newDate += ", " + str(splitDate[0]);
     
     return newDate;
+#end formatDate()  
     
+#----------------------
+# CONNECT TO DB
+#----------------------
 def connectToDB():
     connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
     try:
         return psycopg2.connect(connectionString)
     except:
         print("Can't connect to database.")
+#end connectToDB()
 
-@app.route('/')
-def mainIndex():
-    worldid = '1'
-    world_results = worldinfo(worldid)
-    description = worlddesc(worldid)
-    return render_template("index.html", world=world_results, world_desc = description[0][1], worldID = worldid);
-    
-@app.route('/article')
-def articletest():
-     return render_template("article.html");
-     
+#----------------------
+# GET USER INFO
+#----------------------
 def getUser():
-    currentUser = {'username': session['username']}
+    currentUser = {}
+    if 'username' in session:
+        currentUser['username'] = session['username']
+    else:
+        currentUser['username'] = ''
     return currentUser
+#end getUser()
 
-#------------------------------------
-#  World Routes
-#------------------------------------
-
+#----------------------
+# WORLD INFO
+#----------------------
 #Grabs info for world to be displayed on sidebar of worlds and articles     
 def worldinfo(worldid):
     conn = connectToDB()
@@ -83,7 +87,11 @@ def worldinfo(worldid):
 
     results = [world_results, ca_results];
     return results
+#end worldinfo()
 
+#----------------------
+# WORLD DESCRIPTION
+#----------------------
 #Grabs the description of a world    
 def worlddesc(worldid):
     conn = connectToDB()
@@ -98,24 +106,11 @@ def worlddesc(worldid):
     
     description = cur.fetchall();
     return description
+#end worlddesc()
 
-@app.route('/world/<worldid>')
-def world(worldid):
-    results = worldinfo(worldid)
-    print(worldid)
-    description = worlddesc(worldid)
-    
-    return render_template("world.html", world_info = results, world_description=description[0][0], worldid = worldid, color="#aaaaaa");
-
-#------------------------------------
-#  End World
-#------------------------------------
-
-
-#------------------------------------
-#  Article Routes
-#------------------------------------
-
+#----------------------
+# ARTICLE DESCRIPTION
+#----------------------
 #Grabs information to display an article
 def articledesc(worldid, categoryname, articlename):
     conn = connectToDB()
@@ -133,13 +128,51 @@ def articledesc(worldid, categoryname, articlename):
     description = cur.fetchall()
     
     return description
+#end articledesc
+
+
+
+@app.route('/')
+def mainIndex():
+    worldid = '1'
+    world_results = worldinfo(worldid)
+    description = worlddesc(worldid)
+    return render_template("index.html", world=world_results, world_desc = description[0][1], worldID = worldid, user=getUser());
+#end mainIndex()    
+    
+@app.route('/article')
+def articletest():
+     return render_template("article.html");
+#end articletest()
+
+#------------------------------------
+#  World Routes
+#------------------------------------
+@app.route('/world/<worldid>')
+def world(worldid):
+    results = worldinfo(worldid)
+    print(worldid)
+    description = worlddesc(worldid)
+    
+    return render_template("world.html", world_info = results, world_description=description[0][0], worldid = worldid, color="#aaaaaa", user=getUser());
+
+#------------------------------------
+#  End World
+#------------------------------------
+
+
+#------------------------------------
+#  Article Routes
+#------------------------------------
+
+
 
 @app.route('/world/<worldid>/<categoryname>/<articlename>')
 def article(worldid, categoryname, articlename):
     world_results = worldinfo(worldid)
     article_results = articledesc(worldid, categoryname, articlename)
     
-    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa");
+    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa", user=getUser());
 
 #------------------------------------
 #  End Article
@@ -177,45 +210,40 @@ def user(username):
             print("ERROR executing SELECT")
             print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
 
+        #put the created worlds into an array
         worlds = []
         if len(worldid_results) > 0:
             worldid_results = worldid_results[0];
-            print(worldid_results)
             for worldid in worldid_results:
-                print(worldid)
                 worldname = worldinfo(worldid)[0][0][0]
                 worlddescription = worlddesc(worldid)[0][0]
                 world = [worldid, worldname, worlddescription]
                 worlds.append(world)
-                print(worlds)
 
         #Get user's collaborative worlds
         try:
             query = {'username':username}
             cur.execute("""SELECT world.WorldID FROM world JOIN userworlds ON (world.WorldID = userworlds.UserID) JOIN member ON (userworlds.UserID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s) AND userworlds.Role = 'Editor';""", query);
             collab_results = cur.fetchall()
-            print(collab_results[0])
         except:
             print("ERROR executing SELECT")
             print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
 
+        #put collab worlds into an array
         collabs = []
         if len(collab_results) > 0:
             collab_results = collab_results[0];
-            print(collab_results)
             for collabid in collab_results:
-                print(collabid)
                 colname = worldinfo(collabid)[0][0][0]
                 coldescription = worlddesc(collabid)[0][0]
                 collab = [collabid, colname, coldescription]
                 collabs.append(collab)
-                print(collabs)
         
         
         
         color="#aaaaaa";
     
-    return render_template("user.html", user_info = results, color=color, worlds=worlds, collabs=collabs);
+    return render_template("user.html", user_info = results, color=color, worlds=worlds, collabs=collabs, user=getUser());
 
 #------------------------------------
 #  End User
@@ -227,7 +255,7 @@ def user(username):
 #------------------------------------
 @app.route('/signup')
 def signup():
-    return render_template('signup.html', errors=None)
+    return render_template('signup.html', errors=None, user=getUser())
 
 @app.route('/signup1', methods=['POST'])
 def signup1():
@@ -272,9 +300,9 @@ def signup1():
             print("Failed to execute the following: ")
             print(cur.mogrify("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query))
             conn.rollback()
-            return render_template("signup.html", errors = None) #Fix this later to give a message
+            return render_template("signup.html", errors = None, user=getUser()) #Fix this later to give a message
     else:
-        return render_template("signup.html", errors = [u_free, e_free, p_match]);
+        return render_template("signup.html", errors = [u_free, e_free, p_match], user=getUser());
         
     conn.commit()    
     
@@ -288,28 +316,39 @@ def signup1():
 #  Login Route
 #------------------------------------
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST'])
 def login():
     #Database connection
     conn = connectToDB()
     cur = conn.cursor()
-    query = {
+    
+    #rule = request.url_rule #Get the page to redirect to if login succeeds
+    #print('Rule: ')
+    #print(rule)
+    
+    if (request.method == 'POST'):
+        query = {
         'username' : request.form['username_login'],
         'password' : request.form['password_login'],
-    }
-    rule = request.url_rule #Get the page to redirect to if login succeeds
-    print('Rule: ' + rule)
-    
-    if (request.method == 'GET'):
-        try:
-            cur.execute("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s)""", query)
-        except:
-            print(cur.mogrify("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s)""", query))
-            return render_template("login.html")
-    else:
-        return redirect()
+        'redirect' : request.form['login_redirect']
+        }
         
-    return redirect(url_for(rule));
+        print(query)
+        try:
+            cur.execute("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query)
+            if cur.rowcount == 0:
+                #no user was found
+                print("No user found with that username and password.")
+            else:
+                #user with that username and password was found
+                session['username'] = query['username']
+        except:
+            print(cur.mogrify("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query))
+            #return render_template("login.html")
+    else:
+        return redirect(request.form['login_redirect'])
+    
+    return redirect(request.form['login_redirect']);
     
 #------------------------------------
 #  End Login

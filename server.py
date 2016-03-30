@@ -42,6 +42,10 @@ def mainIndex():
 @app.route('/article')
 def articletest():
      return render_template("article.html");
+     
+def getUser():
+    currentUser = {'username': session['username']}
+    return currentUser
 
 #------------------------------------
 #  World Routes
@@ -98,10 +102,10 @@ def worlddesc(worldid):
 @app.route('/world/<worldid>')
 def world(worldid):
     results = worldinfo(worldid)
-    
+    print(worldid)
     description = worlddesc(worldid)
     
-    return render_template("world.html", world_info = results, world_description=description[0][0], color="#aaaaaa");
+    return render_template("world.html", world_info = results, world_description=description[0][0], worldid = worldid, color="#aaaaaa");
 
 #------------------------------------
 #  End World
@@ -135,7 +139,7 @@ def article(worldid, categoryname, articlename):
     world_results = worldinfo(worldid)
     article_results = articledesc(worldid, categoryname, articlename)
     
-    return render_template("article.html", world_info = world_results, article_description = article_results, color="#aaaaaa");
+    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa");
 
 #------------------------------------
 #  End Article
@@ -181,7 +185,7 @@ def user(username):
                 print(worldid)
                 worldname = worldinfo(worldid)[0][0][0]
                 worlddescription = worlddesc(worldid)[0][0]
-                world = [worldname, worlddescription]
+                world = [worldid, worldname, worlddescription]
                 worlds.append(world)
                 print(worlds)
 
@@ -189,29 +193,29 @@ def user(username):
         try:
             query = {'username':username}
             cur.execute("""SELECT world.WorldID FROM world JOIN userworlds ON (world.WorldID = userworlds.UserID) JOIN member ON (userworlds.UserID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s) AND userworlds.Role = 'Editor';""", query);
-            worldid_results = cur.fetchall()
-            print(worldid_results[0])
+            collab_results = cur.fetchall()
+            print(collab_results[0])
         except:
             print("ERROR executing SELECT")
             print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
 
-        collab_worlds = []
-        if len(worldid_results) > 0:
-            worldid_results = worldid_results[0];
-            print(worldid_results)
-            for worldid in worldid_results:
-                print(worldid)
-                worldname = worldinfo(worldid)[0][0][0]
-                worlddescription = worlddesc(worldid)[0][0]
-                world = [worldname, worlddescription]
-                worlds.append(world)
-                print(worlds)
+        collabs = []
+        if len(collab_results) > 0:
+            collab_results = collab_results[0];
+            print(collab_results)
+            for collabid in collab_results:
+                print(collabid)
+                colname = worldinfo(collabid)[0][0][0]
+                coldescription = worlddesc(collabid)[0][0]
+                collab = [collabid, colname, coldescription]
+                collabs.append(collab)
+                print(collabs)
         
         
         
         color="#aaaaaa";
     
-    return render_template("user.html", user_info = results, color=color, worlds=worlds);
+    return render_template("user.html", user_info = results, color=color, worlds=worlds, collabs=collabs);
 
 #------------------------------------
 #  End User

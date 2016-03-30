@@ -92,13 +92,13 @@ and the article content.
                 
                     {% for world in worlds %}
                     <div class="col-md-4 carousel-cell">
-                        <a href="#">
+                        <a href="/world/{{world[0]}}">
                             <img class="img-responsive" src="http://placehold.it/700x400" alt="">
                         </a>
                         <h3>
-                            <a href="#">{{world[0]}}</a>
+                            <a href="/world/{{world[0]}}">{{world[1]}}</a>
                         </h3>
-                        <p>{{world[1]}}</p>
+                        <p>{{world[2]}}</p>
                     </div>
                     {% endfor %}
             </div>
@@ -115,20 +115,24 @@ and the article content.
             <!-- /.row -->
             
             <!-- Projects Row -->
+            {% if collabs|length > 0 %}
             <div class="row carousel js-flickity"
                 data-flickity-options='{ "wrapAround": true, "pageDots": false, "setGallerySize": false}'>
-                {% for num in range(5)%}
+                {% for collab in collabs %}
                 <div class="col-md-4 carousel-cell">
-                    <a href="#">
+                    <a href="/world/{{collab[0]}}">
                         <img class="img-responsive" src="http://placehold.it/700x400" alt="">
                     </a>
                     <h3>
-                        <a href="#">World Name</a>
+                        <a href="/world/{{collab[0]}}">{{collab[1]}}</a>
                     </h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+                    <p>{{collab[2]}}</p>
                 </div>
                 {% endfor %}
             </div>
+            {% else %}
+                <p style="font-size:150%;text-align:center">No worlds to display!</p>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock %}

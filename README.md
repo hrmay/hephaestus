@@ -18,6 +18,7 @@ After downloading the respository on your server, you'll need to install Flask a
 This application uses a Postgres database. For Cloud9 users, the following should setup your database:
 
 
+    sudo apt-get install postgres-9.3
     #Start postgresql and create a new password for the default use (postgres)
     service postgresql start
     sudo sudo -u postgres psql

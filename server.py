@@ -354,5 +354,9 @@ def login():
 #  End Login
 #------------------------------------
 
+@app.route('/world/new')
+def addworld():
+    return render_template('new_world.html', user=getUser())
+
 if __name__ == '__main__':
     app.run(host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug = True)

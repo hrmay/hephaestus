@@ -56,6 +56,9 @@ Contains the website navigation and footer.
 </head>
 
 <body>
+    
+    <input name="activePage" type="hidden" id="activePage" ng-model="activePage">
+    
     {% if user['username'] == '' %}
     <!-- Modal -->
     <div id="loginModal" class="modal fade" role="dialog">

@@ -2,8 +2,9 @@
     <!-- Display online users -->
     <div id="online">
         <!--div class="btn btn-sm disabled">TempUser</div-->
-        <div ng-repeat="user in usersOnline">
-            <span ng-bind="user.username"></span>
+        <div ng-repeat="user in users">
+            <span ng-bind="user.username"></span>&nbsp;
+            <span ng-bind="user.location"></span>
         </div>
     </div>
 

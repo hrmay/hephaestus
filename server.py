@@ -18,7 +18,7 @@ app.secret_key = os.urandom(24).encode('hex')
 
 socketio = SocketIO(app)
 
-usersOnline = {'1': {'username': 'evan', 'location':'main index'}}
+usersOnline = {'1': {'username': 'evan', 'location':'main index'}, '2': {'username': 'marty', 'location':'article'}}
 
 #----------------------
 # FORMAT DATE
@@ -143,13 +143,23 @@ def articledesc(worldid, categoryname, articlename):
 def makeConnection(): 
     session['uuid'] = uuid.uuid1()
     print('connected')
+#    print(usersOnline)
+#    for user in usersOnline:
+#        print(user)
+#        emit('users', usersOnline[user])
     
 @socketio.on('users', namespace='/heph')
 def getOnlineUsers():
-    emit('usersOnline', usersOnline)
+    print('getting online users')
+    for user in usersOnline:
+        print(user)
+        emit('usersOnline', usersOnline[user])
     
-
-
+    
+    
+#------------------------------------
+#  MAIN ROUTES
+#------------------------------------
 @app.route('/')
 def mainIndex():
     worldid = '1'
@@ -164,7 +174,7 @@ def articletest():
 #end articletest()
 
 #------------------------------------
-#  World Routes
+#  WORLD ROUTES
 #------------------------------------
 @app.route('/world/<worldid>')
 def world(worldid):
@@ -271,60 +281,59 @@ def user(username):
 #------------------------------------
 #  Signup Routes
 #------------------------------------
-@app.route('/signup')
+@app.route('/signup', methods=['POST','GET'])
 def signup():
-    return render_template('signup.html', errors=None, user=getUser())
-
-@app.route('/signup1', methods=['POST'])
-def signup1():
-    #Database connection
-    conn = connectToDB()
-    cur = conn.cursor()
-    query = {
-        'username'         : request.form['username'],
-        'email'            : request.form['email'],
-        'password'         : request.form['password'],
-        'confirm_password' : request.form['confirm_password']
-    }
-    
-    try:
-        #Check that no one has this username or this email
-        cur.execute("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query)
-        print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
-        results = cur.fetchall()
-    except:
-        print("Failed to execute the following: ")
-        print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
+    if request.method == 'GET':
+        return render_template('signup.html', errors=None, user=getUser())
+    elif request.method == 'POST':
+        #Database connection
+        conn = connectToDB()
+        cur = conn.cursor()
+        query = {
+            'username'         : request.form['username'],
+            'email'            : request.form['email'],
+            'password'         : request.form['password'],
+            'confirm_password' : request.form['confirm_password']
+        }
         
-    #Check
-    u_free = True;
-    e_free = True;
-    
-    if len(results) >= 1:
-        for result in results:
-            if result[0].lower() == query['username'].lower():
-                u_free = False;
-            if result[1].lower() == query['email'].lower():
-                e_free = False;
-        
-    #Check that passwords match
-    p_match = (query['password'] == query['confirm_password'])
-    all_okay = (p_match and u_free and e_free)
-    
-    if (request.method == 'POST' and all_okay == True):
         try:
-            cur.execute("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query)
+            #Check that no one has this username or this email
+            cur.execute("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query)
+            print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
+            results = cur.fetchall()
         except:
             print("Failed to execute the following: ")
-            print(cur.mogrify("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query))
-            conn.rollback()
-            return render_template("signup.html", errors = None, user=getUser()) #Fix this later to give a message
-    else:
-        return render_template("signup.html", errors = [u_free, e_free, p_match], user=getUser());
+            print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
+            
+        #Check
+        u_free = True;
+        e_free = True;
         
-    conn.commit()    
-    
-    return redirect(url_for('mainIndex'))
+        if len(results) >= 1:
+            for result in results:
+                if result[0].lower() == query['username'].lower():
+                    u_free = False;
+                if result[1].lower() == query['email'].lower():
+                    e_free = False;
+            
+        #Check that passwords match
+        p_match = (query['password'] == query['confirm_password'])
+        all_okay = (p_match and u_free and e_free)
+        
+        if (request.method == 'POST' and all_okay == True):
+            try:
+                cur.execute("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query)
+                session['username'] = query['username']
+            except:
+                print("Failed to execute the following: ")
+                print(cur.mogrify("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query))
+                conn.rollback()
+                return render_template("signup.html", errors = None, user=getUser()) #Fix this later to give a message
+        else:
+            return render_template("signup.html", errors = [u_free, e_free, p_match], user=getUser());
+            
+        conn.commit()    
+        return redirect(url_for('mainIndex'))
     
 #------------------------------------
 #  End Signup
@@ -346,9 +355,9 @@ def login():
     
     if (request.method == 'POST'):
         query = {
-        'username' : request.form['username_login'],
-        'password' : request.form['password_login'],
-        'redirect' : request.form['login_redirect']
+            'username' : request.form['username_login'],
+            'password' : request.form['password_login'],
+            'redirect' : request.form['login_redirect']
         }
         
         print(query)
@@ -377,4 +386,4 @@ def addworld():
     return render_template('new_world.html', user=getUser())
 
 if __name__ == '__main__':
-    app.run(host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug = True)
+    socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug = True)

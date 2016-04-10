@@ -141,7 +141,7 @@ Contains the website navigation and footer.
                         <a href="#">Explore</a> <!-- Page to look at and search for the worlds of other users -->
                     </li>
                     <li>
-                        <a href="/world/new">Create</a> <!-- Create new world, new article, edit articles, etc. -->
+                        <a href="#">Create</a> <!-- Create new world, new article, edit articles, etc. -->
                     </li>
                     <li>
                         <a href="#">Community</a> <!-- Users, discussion topics, recent comments, etc. -->
@@ -155,7 +155,7 @@ Contains the website navigation and footer.
                     {% if user['username'] == '' %}
                         <a href="#loginModal" data-toggle="modal" data-target="#loginModal">Login</a>  <!-- Login modal linked here -->
                     {% else %}
-                        <p style="color:white">Hello, {{user['username']}}!</p>
+                        <a href="/user/{{user['username']}}">{{user['username']}}</a>
                     {% endif %}
                     </li>
                 </ul>

@@ -5,7 +5,9 @@
 #------------------------------------
 
 import os
+import uuid
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask.ext.socketio import SocketIO, emit
 import random
 import psycopg2
 import psycopg2.extras
@@ -14,7 +16,9 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(24).encode('hex')
 
-usersOnline = {}
+socketio = SocketIO(app)
+
+usersOnline = {'1': {'username': 'evan', 'location':'main index'}}
 
 #----------------------
 # FORMAT DATE
@@ -132,6 +136,18 @@ def articledesc(worldid, categoryname, articlename):
     return description
 #end articledesc
 
+#------------------------------------
+#  SOCKET IO
+#------------------------------------
+@socketio.on('connect', namespace='/heph')
+def makeConnection(): 
+    session['uuid'] = uuid.uuid1()
+    print('connected')
+    
+@socketio.on('users', namespace='/heph')
+def getOnlineUsers():
+    emit('usersOnline', usersOnline)
+    
 
 
 @app.route('/')

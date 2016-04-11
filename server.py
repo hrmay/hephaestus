@@ -152,10 +152,23 @@ def makeConnection():
 @socketio.on('users', namespace='/heph')
 def updateUsers(location):
     tempUser = {'username': session['username'], 'location':location, 'time': time.time()}
-    if session['username'] in usersOnline:
-        del usersOnline[session['username']]
     usersOnline[session['username']] = tempUser
     emit('users', tempUser, broadcast=True)
+    
+@socketio.on('newUser', namespace='/heph')
+def newUser(location):
+    tempUser = {'username': session['username'], 'location':location, 'time': time.time()}
+    if session['username'] in usersOnline:
+        del usersOnline[session['username']]
+        usersOnline[session['username']] = tempUser
+        emit('replaceUser', tempUser, broadcast=True)
+    else:
+        usersOnline[session['username']] = tempUser
+        emit('newUser', tempUser, broadcast = True)
+    
+@socketio.on('deleteUser', namespace='/heph')
+def deleteUser():
+    emit('deleteUser', session['username'], broadcast = True)
 
 #------------------------------------
 #  MAIN ROUTES
@@ -394,6 +407,8 @@ def login():
 
 @app.route('/logout')
 def logout():
+    del usersOnline[session['username']]
+    deleteUser()
     session.pop('username', None)
     return redirect(url_for('mainIndex'))
 

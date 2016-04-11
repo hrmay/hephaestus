@@ -6,10 +6,10 @@
     <!-- Display online users -->
     <div id="online" class="row">
         <div class="col-lg-12">
-            <div ng-repeat="user in users track by user.username">
+            <div ng-repeat="user in users">
                 <div class="btn btn-sm onlineUser">
                     <span ng-bind="user.username"></span>&nbsp;
-                    <span ng-bind="user.location"></span>
+                    <!--span ng-bind="user.location"></span-->
                 </div>
             </div>
         </div>

@@ -7,10 +7,11 @@
     <div id="online" class="row">
         <div class="col-lg-12">
             <div ng-repeat="user in users">
-                <div class="btn btn-sm onlineUser">
+                <div ng-bind-html="user"></div>
+                <!--div class="btn btn-sm onlineUser" ng-bind-html="userPage">
                     <span ng-bind="user.username"></span>&nbsp;
-                    <!--span ng-bind="user.location"></span-->
-                </div>
+                    <!--span ng-bind="user.location"></span>
+                </div-->
             </div>
         </div>
     </div>

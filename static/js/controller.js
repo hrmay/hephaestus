@@ -1,6 +1,6 @@
-var Hephaestus = angular.module('Hephaestus', [])
+var Hephaestus = angular.module('Hephaestus', ['ngSanitize'])
 
-Hephaestus.controller('OnlineController', function($scope) {
+Hephaestus.controller('OnlineController', function($scope, $sce) {
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/heph')
     
     $scope.users = [];
@@ -20,15 +20,25 @@ Hephaestus.controller('OnlineController', function($scope) {
     
     socket.on('users', function(user) {
         console.log("it's trying to do something with ", user);
+        var userPage = '<a href="/user/'+
+            user.username + '"><div class="btn btn-sm onlineUser"><span>' + 
+            user.username + '</span>&nbsp; <span>' + 
+            user.location + '</span></div></a>';
+        console.log(userPage);
         console.log($scope.users);
-        $scope.users.push(user);
+        $scope.users.push(userPage);
         $scope.$apply();
     });
     
     
     socket.on('newUser', function(user) {
         console.log("adding new user", user);
-        $scope.users.push(user);
+        var userPage = '<a href="/user/'+
+            user.username + '<div class="btn btn-sm onlineUser"><span>' + 
+            user.username + '</span>&nbsp; <span>' + 
+            user.location + '</span></div></a>';
+        console.log(userPage);
+        $scope.users.push(userPage);
         $scope.$apply();
     });
     

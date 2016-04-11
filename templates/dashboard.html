@@ -1,12 +1,27 @@
 <div class="controller" ng-controller="OnlineController">
+    <!-- Welcome banner -->
+    <header class="jumbotron hero-spacer" id="main-header">
+        <h1>Welcome!</h1>
+    </header>
+    
     <!-- Display online users -->
-    <div id="online">
-        <!--div class="btn btn-sm disabled">TempUser</div-->
-        <div ng-repeat="user in usersOnline">
-            <span ng-bind="user.username"></span>
+    <div id="online" class="row">
+        <div class="col-lg-12">
+            <div ng-repeat="user in users track by user.username">
+                <div class="btn btn-sm onlineUser">
+                    <span ng-bind="user.username"></span>&nbsp;
+                    <span ng-bind="user.location"></span>
+                </div>
+            </div>
         </div>
     </div>
-
-    <h1>Welcome!</h1>
-    <p>Motherfucker you are LOGGED IN get ready to hit that MOTHERFUCKIN LIKE</p>
+    
+    <hr>
+    
+    <!-- Anything else -->
+    <div class="row">
+        <div class="col-lg-12">
+            Motherfucker you are LOGGED IN get ready to hit that MOTHERFUCKIN LIKE
+        </div>
+    </div>
 </div>

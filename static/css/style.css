@@ -155,3 +155,10 @@ works with bootstrap's list group to create an accordion
         padding-bottom: 15px;
     }
 }
+
+.onlineUser {
+    margin:3px;
+    float: left;
+    display: block;
+    background-color: #dddddd;
+}

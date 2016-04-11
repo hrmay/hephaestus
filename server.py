@@ -11,6 +11,7 @@ from flask.ext.socketio import SocketIO, emit
 import random
 import psycopg2
 import psycopg2.extras
+import time
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ app.secret_key = os.urandom(24).encode('hex')
 
 socketio = SocketIO(app)
 
-usersOnline = {'1': {'username': 'evan', 'location':'main index'}, '2': {'username': 'marty', 'location':'article'}}
+usersOnline = {'mary': {'username': 'mary', 'location':'main index', 'time': time.time()}, 'testo': {'username': 'testo', 'location':'article', 'time': time.time()}}
 
 #----------------------
 # FORMAT DATE
@@ -140,21 +141,22 @@ def articledesc(worldid, categoryname, articlename):
 #  SOCKET IO
 #------------------------------------
 @socketio.on('connect', namespace='/heph')
-def makeConnection(): 
+def makeConnection():
     session['uuid'] = uuid.uuid1()
     print('connected')
-#    print(usersOnline)
-#    for user in usersOnline:
-#        print(user)
-#        emit('users', usersOnline[user])
-    
-@socketio.on('users', namespace='/heph')
-def getOnlineUsers():
-    print('getting online users')
+    print(usersOnline)
     for user in usersOnline:
         print(user)
-        emit('usersOnline', usersOnline[user])
-    
+        emit('users', usersOnline[user])
+        
+@socketio.on('users', namespace='/heph')
+def updateUsers(location):
+    tempUser = {'username': session['username'], 'location':location, 'time': time.time()}
+    if session['username'] in usersOnline:
+        del usersOnline[session['username']]
+    usersOnline[session['username']] = tempUser
+    emit('users', tempUser, broadcast=True)
+
 #------------------------------------
 #  MAIN ROUTES
 #------------------------------------

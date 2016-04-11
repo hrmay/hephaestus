@@ -9,10 +9,11 @@ front page.
 
 {% block content %}
 
-    <!--
-    <form id="main" ng-submit="locate()"></form>
-    <script>document.getElementById('main').submit();</script>
-    -->
+    <script>
+        $(document).ready(function() {
+            $("#activePage").val("Home");
+        });
+    </script>
 
     <div class="container">
         {% if user['username'] == '' %}

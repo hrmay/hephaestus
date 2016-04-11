@@ -125,3 +125,7 @@ works with bootstrap's list group to create an accordion
 .carousel-cell {
     width: 33.3333333333333333333333333333333333333333333333333333333333333333%;
 }
+
+.onlineUser {
+    background-color: #dddddd;
+}

@@ -1,13 +1,17 @@
 <div class="controller" ng-controller="OnlineController">
     <!-- Display online users -->
     <div id="online">
-        <!--div class="btn btn-sm disabled">TempUser</div-->
-        <div ng-repeat="user in users">
-            <span ng-bind="user.username"></span>&nbsp;
-            <span ng-bind="user.location"></span>
+        <!--<div class="btn btn-sm disabled"></div>-->
+        <div ng-repeat="user in users track by user.username">
+            <a ng-href="/user/{{user.username}}" class="btn btn-sm onlineUser">
+                <span ng-bind="user.username"></span>&nbsp;
+                <span ng-bind="user.location"></span>
+            </a>
         </div>
     </div>
 
-    <h1>Welcome!</h1>
+    <header class="jumbotron hero-spacer" id="main-header">
+        <h1>Welcome!</h1>
+    </header>
     <p>Motherfucker you are LOGGED IN get ready to hit that MOTHERFUCKIN LIKE</p>
 </div>

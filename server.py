@@ -141,7 +141,7 @@ def articledesc(worldid, categoryname, articlename):
 #  SOCKET IO
 #------------------------------------
 @socketio.on('connect', namespace='/heph')
-def makeConnection(): 
+def makeConnection():
     session['uuid'] = uuid.uuid1()
     print('connected')
     print(usersOnline)
@@ -152,8 +152,10 @@ def makeConnection():
 @socketio.on('users', namespace='/heph')
 def updateUsers(location):
     tempUser = {'username': session['username'], 'location':location, 'time': time.time()}
+    if session['username'] in usersOnline:
+        del usersOnline[session['username']]
     usersOnline[session['username']] = tempUser
-    emit('users', tempUser)
+    emit('users', tempUser, broadcast=True)
 
 #------------------------------------
 #  MAIN ROUTES

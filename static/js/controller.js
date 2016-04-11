@@ -17,7 +17,6 @@ Hephaestus.controller('OnlineController', function($scope) {
     });
     
     socket.on('users', function(user) {
-        
         console.log(user);
         $scope.users.push(user);
         $scope.$apply();

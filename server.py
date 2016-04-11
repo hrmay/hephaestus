@@ -37,17 +37,6 @@ def formatDate(date):
 #end formatDate()  
     
 #----------------------
-# CONNECT TO DB
-#----------------------
-def connectToDB():
-    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
-    try:
-        return psycopg2.connect(connectionString)
-    except:
-        print("Can't connect to database.")
-#end connectToDB()
-
-#----------------------
 # GET USER INFO
 #----------------------
 def getUser():
@@ -58,6 +47,17 @@ def getUser():
         currentUser['username'] = ''
     return currentUser
 #end getUser()
+    
+#----------------------
+# CONNECT TO DB
+#----------------------
+def connectToDB():
+    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
+    try:
+        return psycopg2.connect(connectionString)
+    except:
+        print("Can't connect to database.")
+#end connectToDB()
 
 #----------------------
 # WORLD INFO
@@ -224,7 +224,7 @@ def user(username):
             results = list(results[0]);
             results[1] = formatDate(results[1]);
         except:
-            print("Failed to execute the following: ")
+            print("Failed to execute: "),
             print(cur.mogrify("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username)))
             results = None;
         
@@ -235,7 +235,7 @@ def user(username):
             worldid_results = cur.fetchall()
             print(worldid_results[0])
         except:
-            print("ERROR executing SELECT")
+            print("Failed to execute: ")
             print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
 
         #put the created worlds into an array
@@ -267,8 +267,6 @@ def user(username):
                 collab = [collabid, colname, coldescription]
                 collabs.append(collab)
         
-        
-        
         color="#aaaaaa";
     
     return render_template("user.html", user_info = results, color=color, worlds=worlds, collabs=collabs, user=getUser());
@@ -283,12 +281,14 @@ def user(username):
 #------------------------------------
 @app.route('/signup', methods=['POST','GET'])
 def signup():
+    errorList = []
     if request.method == 'GET':
-        return render_template('signup.html', errors=None, user=getUser())
+        return render_template('signup.html', errors=errorList, user=getUser())
     elif request.method == 'POST':
         #Database connection
         conn = connectToDB()
         cur = conn.cursor()
+        
         query = {
             'username'         : request.form['username'],
             'email'            : request.form['email'],
@@ -296,14 +296,15 @@ def signup():
             'confirm_password' : request.form['confirm_password']
         }
         
-        try:
-            #Check that no one has this username or this email
+        try: #Check that no one has this username or this email
             cur.execute("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query)
-            print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
             results = cur.fetchall()
         except:
-            print("Failed to execute the following: ")
+            print("Failed to execute: "),
             print(cur.mogrify("""SELECT username, email FROM member WHERE LOWER(username) = LOWER(%(username)s) OR LOWER(email) = LOWER(%(email)s);""", query))
+            
+            errorList.append({'type':'database','message':'Failed to check the database! Please report this error.'})
+            return render_template("signup.html", errors = errorList, user=getUser())
             
         #Check
         u_free = True;
@@ -313,11 +314,15 @@ def signup():
             for result in results:
                 if result[0].lower() == query['username'].lower():
                     u_free = False;
+                    errorList.append({'type':'username','message':'This username already exists!'})
                 if result[1].lower() == query['email'].lower():
                     e_free = False;
+                    errorList.append({'type':'email','message':'This email already exists!'})
             
         #Check that passwords match
         p_match = (query['password'] == query['confirm_password'])
+        if p_match == False:
+            errorList.append({'type':'password','message':'Your passwords did not match!'})
         all_okay = (p_match and u_free and e_free)
         
         if (request.method == 'POST' and all_okay == True):
@@ -325,12 +330,14 @@ def signup():
                 cur.execute("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query)
                 session['username'] = query['username']
             except:
-                print("Failed to execute the following: ")
+                print("Failed to execute: "),
                 print(cur.mogrify("""INSERT INTO member (username, email, password, joindate) VALUES (%(username)s, %(email)s, crypt(%(password)s, gen_salt('bf')), now());""", query))
                 conn.rollback()
-                return render_template("signup.html", errors = None, user=getUser()) #Fix this later to give a message
+                
+                errorList.append({'type':'database','message':'Failed to add you to the database! Please report this error.'})
+                return render_template("signup.html", errors = errorList, user=getUser())
         else:
-            return render_template("signup.html", errors = [u_free, e_free, p_match], user=getUser());
+            return render_template("signup.html", errors = errorList, user=getUser())
             
         conn.commit()    
         return redirect(url_for('mainIndex'))
@@ -343,42 +350,55 @@ def signup():
 #  Login Route
 #------------------------------------
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST','GET'])
 def login():
-    #Database connection
-    conn = connectToDB()
-    cur = conn.cursor()
-    
-    #rule = request.url_rule #Get the page to redirect to if login succeeds
-    #print('Rule: ')
-    #print(rule)
-    
-    if (request.method == 'POST'):
+    errorList = []
+    if (request.method == 'GET'):
+        return render_template("login.html", errors = errorList, user=getUser())
+    elif (request.method == 'POST'):
+        #Database connection
+        conn = connectToDB()
+        cur = conn.cursor()
+        
         query = {
             'username' : request.form['username_login'],
             'password' : request.form['password_login'],
             'redirect' : request.form['login_redirect']
         }
         
-        print(query)
         try:
             cur.execute("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query)
             if cur.rowcount == 0:
-                #no user was found
                 print("No user found with that username and password.")
+                errorList.append({'type':'username', 'message':'Your username or password was incorrect! Please try logging in again.'})
+                return render_template("login.html", errors = errorList, user=getUser(), loginRedirect=query['redirect'])
             else:
-                #user with that username and password was found
                 session['username'] = query['username']
         except:
+            print('Failed to execute: '),
             print(cur.mogrify("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query))
-            #return render_template("login.html")
+            errorList.append({'type':'database','message':'Failed to check the database! Please report this error.'})
+            return render_template("login.html", errors = errorList, user=getUser(), loginRedirect=query['redirect'])
     else:
-        return redirect(request.form['login_redirect'])
+        return redirect(query['redirect'])
     
-    return redirect(request.form['login_redirect']);
+    return redirect(query['redirect'])
     
 #------------------------------------
 #  End Login
+#------------------------------------
+
+#------------------------------------
+#  Logout
+#------------------------------------
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('mainIndex'))
+
+#------------------------------------
+#  End Logout
 #------------------------------------
 
 @app.route('/world/new')

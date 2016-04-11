@@ -12,37 +12,34 @@ Sign up page for Hephaestus.
         
         <!-- Jumbotron header -->
         <header class="jumbotron hero-spacer" id="main-header">
-            <h1>Sign Up</h1>
+          <h1>Sign Up</h1>
         </header>
         
-        <p>
-          Thanks for joining us! Please give us a username you'd like, your email, and your password. Keep in mind that both usernames and emails are unique and <i>not</i> case sensitive. 
-        </p>
+        <p>Thanks for joining us! Please give us a username you'd like, your email, and your password. Keep in mind that both usernames and emails are unique and <i>not</i> case sensitive.</p>
       
         <hr>
         
-        {% if errors[0] == False %}
-        <div class="alert alert-warning">
-          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-          <strong>This username already exists.</strong> Please pick a different name.
-        </div>
-        {% endif %}
-        {% if errors[1] == False %}
-        <div class="alert alert-warning">
-          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-          <strong>This email is already associated with an account.</strong> Please use a different email.
-        </div>
-        {% endif %}
-        {% if errors[2] == False %}
-        <div class="alert alert-warning">
-          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-          <strong>Your passwords did not match.</strong> Please re-enter your password and password confirmation and try again.
-        </div>
-        {% endif %}
+        {% for error in errors %}
+          {% if error['type'] == 'database' %}
+            <div class="alert alert-danger col-md-4 col-md-offset-4">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              {{error['message']}}
+            </div>
+          {% endif %}
+        {% endfor %}
         
         <!-- Form -->
         <form class="form-horizontal" method="POST" action="/signup">
             <fieldset>
+            
+            {% for error in errors %}
+              {% if error['type'] == 'username' %}
+                <div class="alert alert-warning col-md-4 col-md-offset-4">
+                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                  {{error['message']}}
+                </div>
+              {% endif %}
+            {% endfor %}
             
             <!-- Text input-->
             <div class="form-group row">
@@ -52,6 +49,15 @@ Sign up page for Hephaestus.
               </div>
             </div>
             
+            {% for error in errors %}
+              {% if error['type'] == 'email' %}
+                <div class="alert alert-warning col-md-4 col-md-offset-4">
+                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                  {{error['message']}}
+                </div>
+              {% endif %}
+            {% endfor %}
+            
             <!-- Text input-->
             <div class="form-group row">
               <div class="col-md-4 col-md-offset-4">
@@ -59,6 +65,15 @@ Sign up page for Hephaestus.
                 
               </div>
             </div>
+            
+            {% for error in errors %}
+              {% if error['type'] == 'password' %}
+                <div class="alert alert-warning col-md-4 col-md-offset-4">
+                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                  {{error['message']}}
+                </div>
+              {% endif %}
+            {% endfor %}
             
             <!-- Password input-->
             <div class="form-group row">

@@ -7,18 +7,20 @@ users can create worlds, work with collaborators (or alone!), and share their pu
 Setup
 -----
 
-After downloading the respository on your server, you'll need to install Flask and psycopg2.
+After downloading the respository on your server, you'll need to install Flask, its SocketIO package, and psycopg2. The following commands should install all dependencies for Cloud9 users:
 
 
-    #To install Flask in Cloud9:
+    #To install Flask:
     sudo easy_install Flask
-    #To install psycopg2 in Cloud9: 
+    #To install Flask-SocketIO:
+    sudo easy_install flask-socketio
+    #To install psycopg2: 
     sudo apt-get install python-psycopg2
     
 This application uses a Postgres database. For Cloud9 users, the following should setup your database:
 
 
-    sudo apt-get install postgres-9.3
+    sudo apt-get install postgresql-contrib-9.3
     #Start postgresql and create a new password for the default use (postgres)
     service postgresql start
     sudo sudo -u postgres psql

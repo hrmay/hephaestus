@@ -1,17 +1,26 @@
 <div class="controller" ng-controller="OnlineController">
-    <!-- Display online users -->
-    <div id="online">
-        <!--<div class="btn btn-sm disabled"></div>-->
-        <div ng-repeat="user in users track by user.username" for="{{user}}" ng-cloak>
-            <a ng-href="/user/{{user.username}}" class="btn btn-sm onlineUser">
-                <span ng-bind="user.username"></span>&nbsp; (
-                <span ng-bind="user.location"></span> )
-            </a>
-        </div>
-    </div>
-
     <header class="jumbotron hero-spacer" id="main-header">
         <h1>Welcome!</h1>
     </header>
-    <p>Motherfucker you are LOGGED IN get ready to hit that MOTHERFUCKIN LIKE</p>
+    
+    <!-- Display online users -->
+    <div id="online" class="row">
+        <div class="col-lg-12">
+            <div ng-repeat="user in users track by user.username">
+                <div class="btn btn-sm onlineUser">
+                    <span ng-bind="user.username"></span>&nbsp;
+                    <span ng-bind="user.location"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <hr>
+    
+    <!-- Anything else -->
+    <div class="row">
+        <div class="col-lg-12">
+            Motherfucker you are LOGGED IN get ready to hit that MOTHERFUCKIN LIKE
+        </div>
+    </div>
 </div>

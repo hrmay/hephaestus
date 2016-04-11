@@ -109,8 +109,6 @@ Contains the website navigation and footer.
                 <button id="login_button" name="login_button" type="submit" class="btn btn-primary">Login</button>
             </div>
             
-            
-            
         </div>
         
         </fieldset>
@@ -140,27 +138,41 @@ Contains the website navigation and footer.
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li>
-                        <a href="#">Explore</a> <!-- Page to look at and search for the worlds of other users -->
+                    <li class="dropdown">
+                        <button>Explore</button> <!-- Page to look at and search for the worlds of other users -->
                     </li>
-                    <li>
-                        <a href="#">Create</a> <!-- Create new world, new article, edit articles, etc. -->
+                    <li class="dropdown">
+                        <button>Create</button> <!-- Create new world, new article, edit articles, etc. -->
                     </li>
-                    <li>
-                        <a href="#">Community</a> <!-- Users, discussion topics, recent comments, etc. -->
+                    <li class="dropdown">
+                        <button>Community</button> <!-- Users, discussion topics, recent comments, etc. -->
                     </li>
-                    <li>
-                        <a href="#">News</a> <!-- Updates, important events, etc. -->
+                    <li class="dropdown">
+                        <button>News</button> <!-- Updates, important events, etc. -->
                     </li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    <li>
                     {% if user['username'] == '' %}
+                    <li>
                         <a href="#loginModal" data-toggle="modal" data-target="#loginModal">Login</a>  <!-- Login modal linked here -->
-                    {% else %}
-                        <a href="/user/{{user['username']}}">{{user['username']}}</a>
-                    {% endif %}
                     </li>
+                    {% else %}
+                    <li class="dropdown">
+                        <button data-toggle="dropdown">{{user['username']}}</button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/user/{{user['username']}}">My Profile</a>
+                            </li>
+                            <li>
+                                <a href="#">My Account</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="/logout">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

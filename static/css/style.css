@@ -126,6 +126,39 @@ works with bootstrap's list group to create an accordion
     width: 33.3333333333333333333333333333333333333333333333333333333333333333%;
 }
 
+.navbar-inverse .navbar-nav>li>button {
+    color: #9d9d9d;
+    background: transparent;
+    border: none;
+}
+
+.navbar-nav>li>button {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 20px;
+}
+
+.nav>li>button {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
+
+.navbar-inverse .navbar-nav>li>button:focus, .navbar-inverse .navbar-nav>li>button:hover {
+    color: #fff;
+    background-color: transparent;
+}
+
+@media (min-width: 768px) {
+    .navbar-nav>li>button {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}
+
 .onlineUser {
+    margin:3px;
+    float: left;
+    display: block;
     background-color: #dddddd;
 }

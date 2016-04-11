@@ -2,10 +2,10 @@
     <!-- Display online users -->
     <div id="online">
         <!--<div class="btn btn-sm disabled"></div>-->
-        <div ng-repeat="user in users track by user.username">
+        <div ng-repeat="user in users track by user.username" for="{{user}}" ng-cloak>
             <a ng-href="/user/{{user.username}}" class="btn btn-sm onlineUser">
-                <span ng-bind="user.username"></span>&nbsp;
-                <span ng-bind="user.location"></span>
+                <span ng-bind="user.username"></span>&nbsp; (
+                <span ng-bind="user.location"></span> )
             </a>
         </div>
     </div>

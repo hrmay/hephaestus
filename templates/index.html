@@ -10,9 +10,8 @@ front page.
 {% block content %}
 
     <script>
-        $(document).ready(function() {
-            $("#activePage").val("Home");
-        });
+        document.getElementByID('activePage').ngValue = "Home";
+
     </script>
 
     <div class="container">

@@ -5,11 +5,11 @@ Hephaestus.controller('OnlineController', function($scope) {
     
     $scope.users = [];
     $scope.username = '';
-    $scope.currentPage = '';
+    $scope.activePage = '';
     
-    $scope.$watch('currentPage', function() {
-        console.log("Updating user", $scope.currentPage, ' fuck');
-        socket.emit('users', $scope.currentPage);
+    $scope.$watch('activePage', function() {
+        console.log("Updating user", $scope.activePage, ' fuck');
+        socket.emit('users', $scope.activePage);
     });
     
     socket.on('connect', function() {
@@ -17,7 +17,7 @@ Hephaestus.controller('OnlineController', function($scope) {
     });
     
     socket.on('users', function(user) {
-        console.log(user);
+        console.log("it's trying to do something with ", user);
         $scope.users.push(user);
         $scope.$apply();
         
@@ -38,9 +38,9 @@ Hephaestus.controller('OnlineController', function($scope) {
     $scope.getUsers = function getUsers() {
         socket.emit('users');
     };
-*/
+
     $scope.activePage = function activePage() {
         console.log('In activePage');
     };
-    
+*/
 });

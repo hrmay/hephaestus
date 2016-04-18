@@ -85,22 +85,15 @@ def worldinfo(worldid):
     except:
         print("ERROR executing SELECT")
         print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query))
-        category_results = None
     
     ca_results = {}
-    if category_results != None:
-        for category in category_results:
-            if category[0] in ca_results:
-                ca_results[category[0]].append(category[1])
-            else:
-                ca_results[category[0]] = [category[1]]
-    else:
-        ca_results = None
-
-    if ca_results == None and world_results == None:
-        results = None
-    else:
-        results = [world_results, ca_results];
+    for category in category_results:
+        if category[0] in ca_results:
+            ca_results[category[0]].append(category[1])
+        else:
+            ca_results[category[0]] = [category[1]]
+    
+    results = [world_results, ca_results];
         
     return results
 #end worldinfo()
@@ -199,11 +192,10 @@ def articletest():
 @app.route('/world/<worldid>')
 def world(worldid):
     results = worldinfo(worldid)
-    print(results)
     print(worldid)
     description = worlddesc(worldid)
     
-    return render_template("world.html", world_info = results, world_description=description, worldid = worldid, color="#aaaaaa", user=getUser());
+    return render_template("world.html", world_info = results, world_description=description, worldid = worldid, color="#aaaaaa", user=getUser(), viewing_world = True);
 
 #------------------------------------
 #  End World
@@ -220,8 +212,9 @@ def world(worldid):
 def article(worldid, categoryname, articlename):
     world_results = worldinfo(worldid)
     article_results = articledesc(worldid, categoryname, articlename)
+    print(article_results)
     
-    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa", user=getUser());
+    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa", user=getUser(), viewing_world=False);
 
 #------------------------------------
 #  End Article

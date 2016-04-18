@@ -10,7 +10,32 @@ article page.
 {% block content %}
 
     <div class="container">
-
+    {% if world_info[0] == [] and viewing_world == True %}
+        <div class="row">
+            <div class="panel panel-default" style="text-align: center; padding: 30px;">
+                <div class="panel-body">
+                    <h1>World not found!</h1>
+                    <p>
+                        We were unable to find this world in our database! If you entered this URL manually, please check that you've typed the 
+                        correct world ID. If you think an error may have occured, please <a href="/contact-us">contact our team</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% elif article_description == [] and viewing_world == False %}
+        <div class="row">
+            <div class="panel panel-default" style="text-align: center; padding: 30px;">
+                <div class="panel-body">
+                    <h1>Article not found!</h1>
+                    <p>
+                        We were unable to find this article in our database! If you entered this URL manually, please check that you've typed the 
+                        correct world ID, category name, and article name. This URL may also be outdated if the article or category name has been
+                        changed or deleted. If you think an error may have occured, please <a href="/contact-us">contact our team</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% else %}
         <div class="row">
 
             <div class="col-md-3">
@@ -65,7 +90,7 @@ article page.
             
 
         </div>
-
+    {% endif %}
     </div>
     <!-- /.container -->
 

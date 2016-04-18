@@ -232,13 +232,13 @@ def user(username):
     if request.method == 'GET':
         #Get the user info for their page
         try:
-            cur.execute("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username))
+            cur.execute("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email, userdesc FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username))
             results = cur.fetchall()
             results = list(results[0]);
             results[1] = formatDate(results[1]);
         except:
             print("Failed to execute: "),
-            print(cur.mogrify("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username)))
+            print(cur.mogrify("""SELECT username, joindate, (SELECT email FROM member WHERE dispemail IS True AND LOWER(username) = LOWER('%s')) email, userdesc FROM member WHERE LOWER(username) = LOWER('%s');""" %(username, username)))
             results = None;
         
         #Get user's created worlds

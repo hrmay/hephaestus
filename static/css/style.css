@@ -62,7 +62,7 @@ works with bootstrap's list group to create an accordion
     padding:20px 5px 20px 5px;
 }
 
-#user-icon > img{
+#user-icon {
     border-radius:10px;
 }
 

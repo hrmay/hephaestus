@@ -27,12 +27,14 @@ and the article content.
         {% else %}
             <!-- User Info -->
             <div class="row">
-                <div class="panel panel-default">
-                    <div class="panel-body" id="user-info">
-                        <div id="user-icon" class="col-md-3">
-                            <img class="img-responsive" src="http://placehold.it/255x255">
+                <div class="panel panel-default col-md-3">
+                    <div class="panel-body row" id="user-info">
+                        <div id="user-icon" class="col-md-12">
+                            <div class="row">
+                            <img id="user-icon" class="col-xs-12 img-rounded" src="http://placehold.it/255x255">
+                            </div>
                         </div>
-                        <div class="col-md-9">
+                        <div class="col-md-12">
                             <h2>{{user_info[0]}}</h3>
                             <div class="detail-block">
                                 {% if user_info[2] != None%}
@@ -70,9 +72,18 @@ and the article content.
                                 {% endif %}-->
                             </div>
                             <p id="user-about">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam dapibus elementum libero, vitae venenatis nulla posuere quis. Nam sed mi imperdiet, ornare enim eget, pharetra risus. Donec volutpat pharetra dui. Curabitur sit amet turpis eget risus cursus dictum sed sed diam. Nunc placerat, nibh ut sodales ultrices, lorem turpis vulputate ligula, vel ornare lorem sapien id dui. Aliquam dolor sapien, varius vel venenatis vel, varius at dui. Fusce ut faucibus elit. Ut eleifend felis ac vestibulum sagittis. Phasellus in elit vitae sem sagittis fringilla. Sed sit amet volutpat dui. Nunc pulvinar maximus aliquam. Vivamus quis risus suscipit, cursus risus vitae, viverra est.
-                            </p>
+                                {% if user_info[3] != None %}
+                                    {{user_info[3]}}
+                                {% else %}
+                                    
+                                {% endif %}
+                            </p> 
                         </div>
+                    </div>
+                </div>
+                <div id="user-recent" class="panel panel-default col-md-9">
+                    <div class="panel-body row">
+                        
                     </div>
                 </div>
             </div>

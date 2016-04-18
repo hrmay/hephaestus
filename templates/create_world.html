@@ -1,0 +1,46 @@
+<!-----------------------------------------------
+NEW_WORLD.HTML
+Page for creating a new world
+------------------------------------------------>
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="container">
+        
+        <!-- Jumbotron header -->
+        <header class="jumbotron hero-spacer" id="main-header">
+            <h1>Create World</h1>
+        </header>
+        
+        <div class="row">
+            <div class="col-md-12">
+        You're creating a new world! Hope you're as excited as we are! Don't worry too much about naming your world; you can't create identically named worlds that both belong to you, but if you and another both have a world with the same name, there's no problem. The rules are pretty open here, but we'd like to ask that you <b>not make something that mocks or harasses other users</b>. Otherwise, be nice and make something great.
+            </div>
+        </div>
+      
+        <hr>
+        
+        <!-- Form -->
+        <form method="POST" action="/createworld">
+            <fieldset>
+            
+            <!-- Text input-->
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input id="world-name" name="world-name" type="text" placeholder="World Name" class="form-control input-md" required="">
+                </div>
+                
+                <div class="col-md-6">
+                    <input id="primary-genre" name="primary-genre" type="text" placeholder="World Name" class="form-control input-md" required="">
+                </div>
+
+            </div>
+            
+            </fieldset>
+        </form>
+            
+    </div>
+
+{% endblock %}

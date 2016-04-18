@@ -19,7 +19,7 @@ app.secret_key = os.urandom(24).encode('hex')
 
 socketio = SocketIO(app)
 
-usersOnline = {'mary': {'username': 'mary', 'location':'main index', 'time': time.time()}, 'testo': {'username': 'testo', 'location':'article', 'time': time.time()}}
+usersOnline = {}
 
 #----------------------
 # FORMAT DATE
@@ -426,9 +426,16 @@ def logout():
 #  End Logout
 #------------------------------------
 
-@app.route('/world/new')
-def addworld():
-    return render_template('new_world.html', user=getUser())
+@app.route('/createworld', methods=['POST','GET'])
+def createworld():
+    if request.method == 'GET':
+        return render_template('create_world.html', user=getUser())
+    elif request.method == 'POST':
+    
+        conn = connectToDB()
+        cur = conn.cursor()
+        
+        #Get information from the form.
 
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug = True)

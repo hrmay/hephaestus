@@ -91,8 +91,8 @@ CREATE TABLE featured
 );
 
 --Create heph user and grant privileges
-DROP USER IF EXISTS heph;
-CREATE USER heph WITH PASSWORD '4SrGY9gPFU72aJxh';
+DROP USER IF EXISTS hermes;
+CREATE USER hermes WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, category, article TO heph;
 GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO heph;
 CREATE EXTENSION pgcrypto;

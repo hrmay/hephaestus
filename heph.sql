@@ -48,6 +48,7 @@ CREATE TABLE genre
     WorldID SERIAL NOT NULL,
     Genre VARCHAR(20),
     PrimaryGenre BOOLEAN DEFAULT False,
+    PRIMARY KEY (WorldID, Genre),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
@@ -56,6 +57,7 @@ CREATE TABLE userworlds
     WorldID SERIAL NOT NULL,
     UserID SERIAL NOT NULL,
     Role VARCHAR(15) DEFAULT 'Editor',
+    PRIMARY KEY (WorldID, UserID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
@@ -90,10 +92,10 @@ CREATE TABLE featured
 );
 
 --Create heph user and grant privileges
-DROP USER IF EXISTS heph;
-CREATE USER heph WITH PASSWORD '4SrGY9gPFU72aJxh';
-GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, category, article TO heph;
-GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO heph;
+DROP USER IF EXISTS hermes;
+CREATE USER hermes WITH PASSWORD '4SrGY9gPFU72aJxh';
+GRANT SELECT, INSERT, UPDATE ON member, world, genre, userworlds, category, article TO hermes;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO hermes;
 CREATE EXTENSION pgcrypto;
 
 

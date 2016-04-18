@@ -52,7 +52,7 @@ def getUser():
 # CONNECT TO DB
 #----------------------
 def connectToDB():
-    connectionString = 'dbname=hephaestus user=heph password=4SrGY9gPFU72aJxh host=localhost'
+    connectionString = 'dbname=hephaestus user=hermes password=4SrGY9gPFU72aJxh host=localhost'
     try:
         return psycopg2.connect(connectionString)
     except:
@@ -257,7 +257,7 @@ def user(username):
             worldid_results = worldid_results[0];
             for worldid in worldid_results:
                 worldname = worldinfo(worldid)[0][0][0]
-                worlddescription = worlddesc(worldid)[0][0]
+                worlddescription = worlddesc(worldid)[0][1]
                 world = [worldid, worldname, worlddescription]
                 worlds.append(world)
 

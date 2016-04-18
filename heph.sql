@@ -47,6 +47,7 @@ CREATE TABLE genre
     WorldID SERIAL NOT NULL,
     Genre VARCHAR(20),
     PrimaryGenre BOOLEAN DEFAULT False,
+    PRIMARY KEY (WorldID, Genre),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
@@ -55,6 +56,7 @@ CREATE TABLE userworlds
     WorldID SERIAL NOT NULL,
     UserID SERIAL NOT NULL,
     Role VARCHAR(15) DEFAULT 'Editor',
+    PRIMARY KEY (WorldID, UserID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 

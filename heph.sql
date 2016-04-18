@@ -101,7 +101,7 @@ CREATE EXTENSION pgcrypto;
 
 --Create pass role to access passwords
 
-INSERT INTO member (Username, Email, DispEmail, Password, UserDesc) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, crypt('123456', gen_salt('bf')), 'Hi!! I''m Mary and I love CYBERPUNK ANIME. I also love science fiction and fantasy. I play D&D!! My favorite show is Steven Universe.');
+INSERT INTO member (Username, Email, DispEmail, Password, UserDesc) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, crypt('123', gen_salt('bf')), 'Hi!! I''m Mary and I love CYBERPUNK ANIME. I also love science fiction and fantasy. I play D&D!! My favorite show is Steven Universe.');
 INSERT INTO member (Username, Email, DispEmail, Password) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, crypt('password', gen_salt('bf')));
 
 INSERT INTO world (CreatorID, Name, ShortDesc, LongDesc) VALUES 

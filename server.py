@@ -380,13 +380,14 @@ def login():
         }
         
         try:
-            cur.execute("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query)
-            if cur.rowcount == 0:
+            cur.execute("""SELECT member.username FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query)
+            if cur.rowcount == 1:
+                name = cur.fetchone()
+                session['username'] = name[0]
+            else:
                 print("No user found with that username and password.")
                 errorList.append({'type':'username', 'message':'Your username or password was incorrect! Please try logging in again.'})
-                return render_template("login.html", errors = errorList, user=getUser(), loginRedirect=query['redirect'])
-            else:
-                session['username'] = query['username']
+                return render_template("login.html", errors = errorList, user=getUser(), loginRedirect=query['redirect']) 
         except:
             print('Failed to execute: '),
             print(cur.mogrify("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query))

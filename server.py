@@ -72,27 +72,36 @@ def worldinfo(worldid):
     #grab world info
     try:
         cur.execute("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), genre.Genre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN genre ON (world.WorldID = genre.WorldID) WHERE world.WorldID = %(worldid)s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", query)
+        world_results = cur.fetchall()
     except:
         print("ERROR executing SELECT")
         print(cur.mogrify("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID) FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) WHERE world.WorldID = %(worldid)s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", query))
-    world_results = cur.fetchall()
+        world_results = None
     
     #grab category names
     try:
         cur.execute("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query)
+        category_results = cur.fetchall()
     except:
         print("ERROR executing SELECT")
         print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query))
-    category_results = cur.fetchall()
+        category_results = None
     
     ca_results = {}
-    for category in category_results:
-        if category[0] in ca_results:
-            ca_results[category[0]].append(category[1])
-        else:
-            ca_results[category[0]] = [category[1]]
+    if category_results != None:
+        for category in category_results:
+            if category[0] in ca_results:
+                ca_results[category[0]].append(category[1])
+            else:
+                ca_results[category[0]] = [category[1]]
+    else:
+        ca_results = None
 
-    results = [world_results, ca_results];
+    if ca_results == None and world_results == None:
+        results = None
+    else:
+        results = [world_results, ca_results];
+        
     return results
 #end worldinfo()
 
@@ -108,10 +117,12 @@ def worlddesc(worldid):
     
     try:
         cur.execute("""SELECT LongDesc, ShortDesc FROM world WHERE WorldID = %(worldid)s;""", query)
+        description = cur.fetchall();
     except:
         print("ERROR executing SELECT")
+        description = None
     
-    description = cur.fetchall();
+    
     return description
 #end worlddesc()
 
@@ -165,10 +176,6 @@ def newUser(location):
     else:
         usersOnline[session['username']] = tempUser
         emit('newUser', tempUser, broadcast = True)
-    
-@socketio.on('deleteUser', namespace='/heph')
-def deleteUser():
-    emit('deleteUser', session['username'], broadcast = True)
 
 #------------------------------------
 #  MAIN ROUTES
@@ -192,10 +199,11 @@ def articletest():
 @app.route('/world/<worldid>')
 def world(worldid):
     results = worldinfo(worldid)
+    print(results)
     print(worldid)
     description = worlddesc(worldid)
     
-    return render_template("world.html", world_info = results, world_description=description[0][0], worldid = worldid, color="#aaaaaa", user=getUser());
+    return render_template("world.html", world_info = results, world_description=description, worldid = worldid, color="#aaaaaa", user=getUser());
 
 #------------------------------------
 #  End World
@@ -380,13 +388,14 @@ def login():
         }
         
         try:
-            cur.execute("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query)
+            cur.execute("""SELECT member.username FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query)
             if cur.rowcount == 0:
                 print("No user found with that username and password.")
                 errorList.append({'type':'username', 'message':'Your username or password was incorrect! Please try logging in again.'})
                 return render_template("login.html", errors = errorList, user=getUser(), loginRedirect=query['redirect'])
             else:
-                session['username'] = query['username']
+                theUsername = cur.fetchall()
+                session['username'] = theUsername[0][0]
         except:
             print('Failed to execute: '),
             print(cur.mogrify("""SELECT * FROM member WHERE lower(member.username) = lower(%(username)s) AND member.Password = crypt(%(password)s, member.Password)""", query))
@@ -408,7 +417,7 @@ def login():
 @app.route('/logout')
 def logout():
     del usersOnline[session['username']]
-    deleteUser()
+    socketio.emit('deleteUser', session['username'])
     session.pop('username', None)
     return redirect(url_for('mainIndex'))
 

@@ -34,7 +34,7 @@ Hephaestus.controller('OnlineController', function($scope, $sce) {
     socket.on('newUser', function(user) {
         console.log("adding new user", user);
         var userPage = '<a href="/user/'+
-            user.username + '<div class="btn btn-sm onlineUser"><span>' + 
+            user.username + '"><div class="btn btn-sm onlineUser"><span>' + 
             user.username + '</span>&nbsp; <span>' + 
             user.location + '</span></div></a>';
         console.log(userPage);

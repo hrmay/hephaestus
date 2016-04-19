@@ -255,11 +255,12 @@ def user(username):
         #put the created worlds into an array
         worlds = []
         if len(worldid_results) > 0:
-            worldid_results = worldid_results[0];
             for worldid in worldid_results:
-                worldname = worldinfo(worldid)[0][0][0]
-                worlddescription = worlddesc(worldid)[0][1]
-                world = [worldid, worldname, worlddescription]
+                tempID = worldid[0]
+                print(worldinfo(tempID))
+                worldname = worldinfo(tempID)[0][0][0]
+                worlddescription = worlddesc(tempID)[0][1]
+                world = [tempID, worldname, worlddescription]
                 worlds.append(world)
 
         #Get user's collaborative worlds
@@ -440,36 +441,55 @@ def createworld():
     
     if request.method == 'GET':
         return render_template('create_world.html', user=getUser(), genres=genres)
+        
     elif request.method == 'POST':
         
         #Get information from the form
+        privacy = request.form['privacy']
+        private = False
+        if (privacy == 'private'):
+            private = True
+        
         newWorld = {
-            'name' :            request.form['world-name'],
-            'prim-genre' :      request.form['primary-genre'],
-            'short-desc' :      request.form['short-desc'],
-            'collab' :          request.form['collab'], #Radio input?
-            'collab_list' :     request.form['collab-details']
+            'creator'       : session['username'],
+            'name'          : request.form['world-name'],
+            'prim-genre'    : request.form['primary-genre'],
+            'private'       : private,
+            'short-desc'    : request.form['short-desc'],
+            'collab_list'   : request.form['collab-details']
         }
+        print('Adding a new world: '),
+        print(newWorld)
         
         #Check
+        #1. That they don't already have a world with this name
+        #2. ?????
         
         #Insert into world
         try:
-            cur.execute()
+            cur.execute("""INSERT INTO world (creatorid, name, primgenre, private, shortdesc) VALUES ((SELECT userid FROM member WHERE member.username = %(creator)s), %(name)s, %(prim-genre)s, %(private)s, %(short-desc)s);""", newWorld)
+            
+            """
+            if (privacy == 'collab'):
+                print (newWorld['collab_list'])
+            """
+                
+            #Everything was added successfully!
             success = True
         except:
             print("Failed to execute: "),
-            print(cur.mogrify())
+            print(cur.mogrify("""INSERT INTO world (creatorid, name, primgenre, private, shortdesc) VALUES ((SELECT userid FROM member WHERE member.username = %(creator)s), %(name)s, %(prim-genre)s, %(private)s, %(short-desc)s);""", newWorld))
         
     #If successful, select from world to get worldid and redirect to the new world
     if (success):
         try:
-            cur.execute()
+            cur.execute("""SELECT worldid FROM world WHERE world.name = %(name)s and world.creatorid = (SELECT userid FROM member WHERE member.username = %(creator)s);""", newWorld)
             worldid = cur.fetchone();
         except:
             print("Failed to execute: "),
-            print(cur.mogrify())
+            print(cur.mogrify("""SELECT worldid FROM world WHERE world.name = %(name)s and world.creatorid = (SELECT userid FROM member WHERE member.username = %(creator)s);""", newWorld))
             
+        worldid = cur.fetchone();    
         #Redirect to the new world
         return redirect(url_for('world/' + worldid))
     #If not, redirect back to the page with any errors added

@@ -1,3 +1,7 @@
-function toggleDetails() {
-    document.getElementById("collab-fieldset").classList.toggle("hidden");
+function showDetails() {
+    document.getElementById("collab-fieldset").classList.remove("hidden");
+}
+
+function hideDetails() {
+    document.getElementById("collab-fieldset").classList.add("hidden");
 }

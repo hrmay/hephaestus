@@ -6,7 +6,10 @@ Page for creating a new world
 {% extends "layout.html" %}
 
 {% block content %}
-    <script src="{{ url_for('static', filename='js/create-world.js') }}"></script>
+    <script>
+        function showDetails() { document.getElementById("collab-fieldset").classList.remove("hidden"); }
+        function hideDetails() { document.getElementById("collab-fieldset").classList.add("hidden"); }
+    </script>
 
     <div class="container">
         
@@ -48,22 +51,22 @@ Page for creating a new world
             
             <div class="row">
                 <fieldset class="form-group col-md-3">
-                    <label for="collab">Is this world collaborative?</label>
+                    <label for="privacy">Is this world collaborative?</label>
                       <div class="radio">
                         <label>
-                          <input type="radio" name="collab" onclick="toggleDetails()" id="option1" value="option1" checked>
+                          <input type="radio" name="privacy" onclick="hideDetails()" id="option1" value="solo" checked>
                             No      
                         </label>
                       </div>
                       <div class="radio">
                         <label>
-                          <input type="radio" name="collab" onclick="toggleDetails()" id="option2" value="option2">
+                          <input type="radio" name="privacy" onclick="showDetails()" id="option2" value="collab">
                             Yes
                         </label>
                       </div>
                       <div class="radio">
                         <label>
-                          <input type="radio" name="collab" onclick="toggleDetails()" id="option2" value="option3">
+                          <input type="radio" name="privacy" onclick="hideDetails()" id="option2" value="private">
                             It's private!
                         </label>
                       </div>
@@ -71,7 +74,7 @@ Page for creating a new world
                 
                 <fieldset id="collab-fieldset" class="form-group col-md-9 hidden">
                     <label for="collab-details">Want to add any other users right now?</label>
-                    <textarea id="collab-details" name="collab-details" type="text" placeholder="Start typing a username..." rows=3 class="form-control input-md"></textarea>
+                    <textarea id="collab-details" name="collab-details" type="text" placeholder="Separate users by commas" rows=3 class="form-control input-md"></textarea>
                 </fieldset>
             </div>
             

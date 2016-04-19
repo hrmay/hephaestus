@@ -28,21 +28,6 @@ DROP TYPE IF EXISTS sub_genre;
 DROP EXTENSION IF EXISTS pgcrypto;
 
 
--- Create tables
-CREATE TABLE Member
-(
-    UserID SERIAL NOT NULL,
-    Username VARCHAR(20) NOT NULL,
-    Email VARCHAR(60) NOT NULL,
-    DispEmail BOOLEAN DEFAULT False,
-    Password TEXT NOT NULL,
-    UserDesc TEXT,
-    JoinDate DATE NOT NULL DEFAULT now(),
-    PRIMARY KEY (UserID)
-);
--- Create index for usernames
-CREATE UNIQUE INDEX Username ON Member(Username);
-
 -- Create list of genre types
 CREATE TYPE prim_genre AS ENUM (
     'Fantasy',
@@ -94,54 +79,70 @@ CREATE TYPE sub_genre AS ENUM (
 --SELECT enum_range(NULL::prim_genre);  
 --SELECT enum_range(NULL::sub_genre);
 
+
+-- Create tables
+CREATE TABLE Member
+(
+    UserID      SERIAL NOT NULL,
+    Username    VARCHAR(20) NOT NULL,
+    Email       VARCHAR(60) NOT NULL,
+    DispEmail   BOOLEAN DEFAULT False,
+    Password    TEXT NOT NULL,
+    UserDesc    TEXT,
+    JoinDate    DATE NOT NULL DEFAULT now(),
+    PRIMARY KEY (UserID)
+);
+-- Create index for usernames
+CREATE UNIQUE INDEX Username ON Member(Username);
+
 CREATE TABLE World
 (
-    WorldID SERIAL NOT NULL,
-    CreatorID SERIAL NOT NULL,
-    Name VARCHAR(50) DEFAULT 'Unnamed',
-    PrimGenre PRIM_GENRE NOT NULL,
-    Private BOOLEAN DEFAULT False,
-    ShortDesc VARCHAR(140),
-    LongDesc TEXT,
-    CreateDate DATE NOT NULL DEFAULT now(),
+    WorldID     SERIAL NOT NULL,
+    CreatorID   SERIAL NOT NULL,
+    Name        VARCHAR(50) DEFAULT 'Unnamed',
+    PrimGenre   PRIM_GENRE NOT NULL,
+    Private     BOOLEAN DEFAULT False,
+    ShortDesc   VARCHAR(140),
+    LongDesc    TEXT,
+    CreateDate  DATE NOT NULL DEFAULT now(),
     PRIMARY KEY (WorldID),
     FOREIGN KEY (CreatorID) REFERENCES member(UserID)
 );
 
 CREATE TABLE SubGenre
 (
-    WorldID SERIAL NOT NULL,
-    Genre SUB_GENRE NOT NULL,
+    WorldID     SERIAL NOT NULL,
+    Genre       SUB_GENRE NOT NULL,
     PRIMARY KEY (WorldID, Genre),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
 CREATE TABLE UserWorlds
 (
-    WorldID SERIAL NOT NULL,
-    UserID SERIAL NOT NULL,
-    Role VARCHAR(15) DEFAULT 'Editor',
+    WorldID     SERIAL NOT NULL,
+    UserID      SERIAL NOT NULL,
+    Role        VARCHAR(15) DEFAULT 'Editor',
     PRIMARY KEY (WorldID, UserID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
 CREATE TABLE Category
 (
-    CategoryID SERIAL NOT NULL,
-    WorldID SERIAL NOT NULL,
-    Name VARCHAR(50) DEFAULT 'Unnamed',
+    CategoryID  SERIAL NOT NULL,
+    WorldID     SERIAL NOT NULL,
+    Name        VARCHAR(50) DEFAULT 'Unnamed',
     PRIMARY KEY (CategoryID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
 CREATE TABLE Article
 (
-    ArticleID SERIAL NOT NULL,
-    WorldID SERIAL NOT NULL,
-    CategoryID SERIAL NOT NULL,
-    Name VARCHAR(50) DEFAULT 'Unnamed',
-    Body TEXT,
-    CreateDate DATE NOT NULL DEFAULT now(),
+    ArticleID   SERIAL NOT NULL,
+    WorldID     SERIAL NOT NULL,
+    CategoryID  SERIAL NOT NULL,
+    Name        VARCHAR(50) DEFAULT 'Unnamed',
+    Body        TEXT,
+    CreateDate  DATE NOT NULL DEFAULT now(),
     PRIMARY KEY (ArticleID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID),
     FOREIGN KEY (CategoryID) REFERENCES category(CategoryID)
@@ -149,13 +150,14 @@ CREATE TABLE Article
 
 CREATE TABLE Featured
 (
-    FeaturedID INT NOT NULL DEFAULT 5,
-    WorldID SERIAL NOT NULL,
+    FeaturedID  INT NOT NULL DEFAULT 5,
+    WorldID     SERIAL NOT NULL,
     PRIMARY KEY (FeaturedID),
     FOREIGN KEY (WorldID) REFERENCES world(WorldID)
 );
 
---Create heph user and grant privileges
+
+-- Create hermes user and grant privileges
 DROP USER IF EXISTS hermes;
 CREATE USER hermes WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, subgenre, userworlds, category, article TO hermes;
@@ -163,8 +165,7 @@ GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO hermes;
 CREATE EXTENSION pgcrypto;
 
 
---Create pass role to access passwords
-
+-- Insert test data
 INSERT INTO member (Username, Email, DispEmail, Password, UserDesc) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, crypt('123', gen_salt('bf')), 'Hi!! I''m Mary and I love CYBERPUNK ANIME. I also love science fiction and fantasy. I play D&D!! My favorite show is Steven Universe.');
 INSERT INTO member (Username, Email, DispEmail, Password) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, crypt('password', gen_salt('bf')));
 

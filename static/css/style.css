@@ -162,3 +162,9 @@ works with bootstrap's list group to create an accordion
     display: block;
     background-color: #dddddd;
 }
+
+fieldset {
+    transition: opacity .25s ease-in-out;
+    -moz-transition: opacity .25s ease-in-out;
+    -webkit-transition: opacity .25s ease-in-out;
+}

@@ -71,11 +71,11 @@ def worldinfo(worldid):
     
     #grab world info
     try:
-        cur.execute("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), genre.Genre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN genre ON (world.WorldID = genre.WorldID) WHERE world.WorldID = %(worldid)s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", query)
+        cur.execute("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN subgenre ON (world.WorldID = subgenre.WorldID) WHERE world.WorldID = %(worldid)s GROUP BY world.Name, member.Username, PrimGenre;""", query)
         world_results = cur.fetchall()
     except:
         print("ERROR executing SELECT")
-        print(cur.mogrify("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID) FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) WHERE world.WorldID = %(worldid)s AND genre.PrimaryGenre = True GROUP BY world.Name, member.Username, genre.Genre;""", query))
+        print(cur.mogrify("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN subgenre ON (world.WorldID = subgenre.WorldID) WHERE world.WorldID = %(worldid)s GROUP BY world.Name, member.Username, PrimGenre;""", query))
         world_results = None
     
     #grab category names
@@ -421,14 +421,61 @@ def logout():
 
 @app.route('/createworld', methods=['POST','GET'])
 def createworld():
-    if request.method == 'GET':
-        return render_template('create_world.html', user=getUser())
-    elif request.method == 'POST':
+    success = False
+    worldid = -1
+    #For connecting to the database
+    conn = connectToDB()
+    cur = conn.cursor()
     
-        conn = connectToDB()
-        cur = conn.cursor()
+    #Select the primary genres options
+    try:
+        cur.execute("""SELECT enum_range(NULL::prim_genre);""");
+    except:
+        print("Failed to execute: "),
+        print(cur.mogrify("""SELECT enum_range(NULL::prim_genre);"""))
         
-        #Get information from the form.
+    #Get genres and sort alphabetically
+    genres = cur.fetchall()
+    genres = sorted(genres)
+    
+    if request.method == 'GET':
+        return render_template('create_world.html', user=getUser(), genres=genres)
+    elif request.method == 'POST':
+        
+        #Get information from the form
+        newWorld = {
+            'name' :            request.form['world-name'],
+            'prim-genre' :      request.form['primary-genre'],
+            'short-desc' :      request.form['short-desc'],
+            'collab' :          request.form['collab'], #Radio input?
+            'collab_list' :     request.form['collab-details']
+        }
+        
+        #Check
+        
+        #Insert into world
+        try:
+            cur.execute()
+            success = True
+        except:
+            print("Failed to execute: "),
+            print(cur.mogrify())
+        
+    #If successful, select from world to get worldid and redirect to the new world
+    if (success):
+        try:
+            cur.execute()
+            worldid = cur.fetchone();
+        except:
+            print("Failed to execute: "),
+            print(cur.mogrify())
+            
+        #Redirect to the new world
+        return redirect(url_for('world/' + worldid))
+    #If not, redirect back to the page with any errors added
+    else:
+        return render_template('create_world.html', user=getUser(), genres=genres)
+        
 
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug = True)

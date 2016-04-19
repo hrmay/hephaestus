@@ -6,6 +6,7 @@ Page for creating a new world
 {% extends "layout.html" %}
 
 {% block content %}
+    <script src="{{ url_for('static', filename='js/create-world.js') }}"></script>
 
     <div class="container">
         
@@ -16,7 +17,7 @@ Page for creating a new world
         
         <div class="row">
             <div class="col-md-12">
-        You're creating a new world! Hope you're as excited as we are! Don't worry too much about naming your world; you can't create identically named worlds that both belong to you, but if you and another both have a world with the same name, there's no problem. The rules are pretty open here, but we'd like to ask that you <b>not make something that mocks or harasses other users</b>. Otherwise, be nice and make something great.
+        You're creating a new world! Hope you're as excited as we are! Don't worry too much about naming your world; you can't create identically named worlds that both belong to you, but if you and another both have a world with the same name, there's no problem. Please pick a name for your world, a primary genre, and a short description. Afterwards, you're free to add more details, images, and subgenres.
             </div>
         </div>
       
@@ -24,21 +25,62 @@ Page for creating a new world
         
         <!-- Form -->
         <form method="POST" action="/createworld">
-            <fieldset>
             
             <!-- Text input-->
-            <div class="form-group">
-                <div class="col-md-6">
+            <div class="row">
+                <fieldset class="form-group col-md-6">
+                    <label for="world-name">What's your world's name?</label>
                     <input id="world-name" name="world-name" type="text" placeholder="World Name" class="form-control input-md" required="">
-                </div>
+                </fieldset>
+                    
+                <fieldset class="form-group col-md-6">
+                    <label for="primary-genre">Which of these genres best fits your world?</label>
+                    <input id="primary-genre" name="primary-genre" type="text" placeholder="Primary Genre" class="form-control input-md" required="">
+                </fieldset>
+            </div>
                 
-                <div class="col-md-6">
-                    <input id="primary-genre" name="primary-genre" type="text" placeholder="World Name" class="form-control input-md" required="">
-                </div>
-
+            <div class="row">
+                <fieldset class="form-group col-md-12">
+                    <label for="short-desc">How would you briefly describe your world to others?</label>
+                    <textarea id="short-desc" name="short-desc" type="text" placeholder="This world is..." class="form-control input-md" rows=3 required=""></textarea>
+                </fieldset>    
             </div>
             
-            </fieldset>
+            <div class="row">
+                <fieldset class="form-group col-md-3">
+                    <label for="collab">Is this world collaborative?</label>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="collab" onclick="toggleDetails()" id="option1" value="option1" checked>
+                            No      
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="collab" onclick="toggleDetails()" id="option2" value="option2">
+                            Yes
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="collab" onclick="toggleDetails()" id="option2" value="option3">
+                            It's private!
+                        </label>
+                      </div>
+                </fieldset>
+                
+                <fieldset id="collab-fieldset" class="form-group col-md-9 hidden">
+                    <label for="collab-details">Want to add any other users right now?</label>
+                    <textarea id="collab-details" name="collab-details" type="text" placeholder="Start typing a username..." rows=3 class="form-control input-md"></textarea>
+                </fieldset>
+            </div>
+            
+            <div class="row">
+                <fieldset class="form-group col-centered">
+                    <button id="create_button" name="create_button" type="submit" class="btn btn-primary">Create!</button>
+                </fieldset>
+            </div>
+            
         </form>
             
     </div>

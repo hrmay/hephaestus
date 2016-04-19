@@ -255,6 +255,7 @@ def user(username):
         #put the created worlds into an array
         worlds = []
         if len(worldid_results) > 0:
+            print(worldid_results)
             worldid_results = worldid_results[0];
             for worldid in worldid_results:
                 worldname = worldinfo(worldid)[0][0][0]

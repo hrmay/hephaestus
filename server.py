@@ -6,7 +6,7 @@
 
 import os
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask.ext.socketio import SocketIO, emit
 import random
 import psycopg2
@@ -296,6 +296,9 @@ def user(username):
 #------------------------------------
 @app.route('/signup', methods=['POST','GET'])
 def signup():
+    if 'username' in session:
+        redirect(url_for('mainIndex'))
+    
     errorList = []
     if request.method == 'GET':
         return render_template('signup.html', errors=errorList, user=getUser())
@@ -422,6 +425,11 @@ def logout():
 
 @app.route('/createworld', methods=['POST','GET'])
 def createworld():
+    #Redirect users who aren't logged in
+    if 'username' not in session:
+        flash('Please log in before accessing this page!', 'session_error')
+        return redirect(url_for('login'))
+    
     success = False
     worldid = -1
     #For connecting to the database
@@ -436,14 +444,14 @@ def createworld():
         print(cur.mogrify("""SELECT enum_range(NULL::prim_genre);"""))
         
     #Get genres and sort alphabetically
-    genres = cur.fetchall()
+    genres = cur.fetchone()[0].split(',')
+    genres = [genre.replace('"','').replace('{','').replace('}','') for genre in genres] #Remove unnecessary characters
     genres = sorted(genres)
     
     if request.method == 'GET':
         return render_template('create_world.html', user=getUser(), genres=genres)
         
     elif request.method == 'POST':
-        
         #Get information from the form
         privacy = request.form['privacy']
         private = False
@@ -468,11 +476,9 @@ def createworld():
         #Insert into world
         try:
             cur.execute("""INSERT INTO world (creatorid, name, primgenre, private, shortdesc) VALUES ((SELECT userid FROM member WHERE member.username = %(creator)s), %(name)s, %(prim-genre)s, %(private)s, %(short-desc)s);""", newWorld)
-            
-            """
+            print(privacy)
             if (privacy == 'collab'):
                 print (newWorld['collab_list'])
-            """
                 
             #Everything was added successfully!
             success = True

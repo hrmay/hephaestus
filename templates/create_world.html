@@ -26,6 +26,28 @@ Page for creating a new world
       
         <hr>
         
+        {% with messages = get_flashed_messages(category_filter=["database_error"]) %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger col-md-4 col-md-offset-4">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% with messages = get_flashed_messages(category_filter=["creation_error"]) %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning col-md-4 col-md-offset-4">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         <!-- Form -->
         <form method="POST" action="/createworld">
             

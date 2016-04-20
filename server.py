@@ -425,7 +425,7 @@ def logout():
 def createworld():
     #Redirect users who aren't logged in
     if 'username' not in session:
-        flash('Please log in before accessing this page!', 'session_error')
+        flash('Please login before accessing this page!', 'session_error')
         return redirect(url_for('login'))
     
     success = False
@@ -440,6 +440,7 @@ def createworld():
     except:
         print("Failed to execute: "),
         print(cur.mogrify("""SELECT enum_range(NULL::prim_genre);"""))
+        flash('Failed to check the database! Please report this error.', 'database_error')
         
     #Get genres and sort alphabetically
     genres = cur.fetchone()[0].split(',')
@@ -462,7 +463,7 @@ def createworld():
             'prim-genre'    : request.form['primary-genre'],
             'private'       : private,
             'short-desc'    : request.form['short-desc'],
-            'collab_list'   : request.form['collab-details']
+            'collab_list'   : [name.strip() for name in request.form['collab-details'].split(',')]
         }
         print('Adding a new world: '),
         print(newWorld)
@@ -471,35 +472,40 @@ def createworld():
         #1. That they don't already have a world with this name
         #2. ?????
         
-        #Insert into world
         try:
+            #Add the world and get its ID
             cur.execute("""INSERT INTO world (creatorid, name, primgenre, private, shortdesc) VALUES ((SELECT userid FROM member WHERE member.username = %(creator)s), %(name)s, %(prim-genre)s, %(private)s, %(short-desc)s);""", newWorld)
-            print(privacy)
+            cur.execute("""SELECT worldid FROM world WHERE world.name = %(name)s and world.creatorid = (SELECT userid FROM member WHERE member.username = %(creator)s);""", newWorld)
+            worldid = cur.fetchone()[0]
+            
+            #Add any collaborators
             if (privacy == 'collab'):
-                print (newWorld['collab_list'])
-                
-            #Everything was added successfully!
+                for name in newWorld['collab_list']:
+                    try:
+                        cur.execute("""INSER INTO UserWorlds(WorldID, UserID) VALUES(%(worldid)s,((SELECT userid FROM member WHERE LOWER(member.username) = LOWER(%(name)s))));""", {'worldid':worldid,'name':name})
+                    except:
+                        print(cur.mogrify("""INSERT INTO UserWorlds(WorldID, UserID) VALUES(%(worldid)s,((SELECT userid FROM member WHERE LOWER(member.username) = LOWER(%(name)s))));""", {'worldid':worldid,'name':name}))
+                        flash('Failed to add user ' + name + '! Please double-check this username and try again.', 'creation_error')
+                        conn.rollback()
+                        
+                        return render_template('create_world.html', user=getUser(), genres=genres)
+            
+            #World (and any collaborators) added successfully!
             success = True
         except:
             print("Failed to execute: "),
             print(cur.mogrify("""INSERT INTO world (creatorid, name, primgenre, private, shortdesc) VALUES ((SELECT userid FROM member WHERE member.username = %(creator)s), %(name)s, %(prim-genre)s, %(private)s, %(short-desc)s);""", newWorld))
+            flash('Failed to reach the database! Please report this error.', 'database_error')
             conn.rollback()
+            
         conn.commit()
         
-    #If successful, select from world to get worldid and redirect to the new world
+    #If successful, redirect!
     if (success):
-        try:
-            cur.execute("""SELECT worldid FROM world WHERE world.name = %(name)s and world.creatorid = (SELECT userid FROM member WHERE member.username = %(creator)s);""", newWorld)
-            worldid = cur.fetchone();
-        except:
-            print("Failed to execute: "),
-            print(cur.mogrify("""SELECT worldid FROM world WHERE world.name = %(name)s and world.creatorid = (SELECT userid FROM member WHERE member.username = %(creator)s);""", newWorld))
-            
-        #Redirect to the new world
-        worldid = worldid[0]
-        return redirect(url_for('world/' + str(worldid)))
+        return redirect(url_for('world', worldid=worldid))
     #If not, redirect back to the page with any errors added
     else:
+        flash('There was a problem creating this world! Please try again.', 'creation_error')
         return render_template('create_world.html', user=getUser(), genres=genres)
         
 

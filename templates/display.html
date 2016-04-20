@@ -1,10 +1,3 @@
-<!-----------------------------------------------
-DISPLAY.HTML
-Controls the content surrounding a world or 
-article page.
-3/21/16 Created
------------------------------------------------->
-
 {% extends "layout.html" %}
 
 {% block content %}
@@ -67,6 +60,7 @@ article page.
                     <a href="/world/{{worldid}}/newcategory" class="list-group-item accordion-toggle">Add Category</a>
                 {% endif %}
                 <div class="list-group" id="world-nav">
+                    
                     {% for category in world_info[1] %}
                         <a class="list-group-item accordion-toggle">{{category}}</a>
                         <div class="list-group sub-category accordion-content">
@@ -78,21 +72,11 @@ article page.
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <!--a class="list-group-item">How does this look</a>
-                    <a class="list-group-item">And this</a>
-                    <a class="list-group-item">And this</a>
-                    <a class="list-group-item">And this</a>
-                    <a class="list-group-item">Subcategories below</a>
-                        <div class="list-group sub-category">
-                            <a class="list-group-item">One</a>
-                            <a class="list-group-item">Two</a>
-                            <a class="list-group-item">Three</a>
-                        </div>
-                    <a class="list-group-item">Continuing the list</a-->
+                    
                 </div>
             </div>
-            {% block stuff %}{% endblock %}
             
+            {% block stuff %}{% endblock %}
 
         </div>
     {% endif %}

@@ -27,8 +27,8 @@ and the article content.
         {% else %}
             <!-- User Info -->
             <div class="row">
-                <div class="panel panel-default col-md-3">
-                    <div class="panel-body row" id="user-info">
+                <div class="col-md-3"> <div class="panel panel-default">
+                    <div class="panel-body" id="user-info">
                         <div id="user-icon" class="col-md-12">
                             <div class="row">
                             <img id="user-icon" class="col-xs-12 img-rounded" src="http://placehold.it/255x255">
@@ -71,21 +71,29 @@ and the article content.
                                 <p class="detail" id="user-bday">Born {{user_info[3]}}</p>
                                 {% endif %}-->
                             </div>
-                            <p id="user-about">
-                                {% if user_info[3] != None %}
-                                    {{user_info[3]}}
-                                {% else %}
-                                    
-                                {% endif %}
-                            </p> 
                         </div>
                     </div>
-                </div>
-                <div id="user-recent" class="panel panel-default col-md-9">
-                    <div class="panel-body row">
-                        
+                </div> </div>
+                <div id="user-recent" class="col-md-9"> <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2 class="page-header">User Bio</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p id="user-about">
+                                    {% if user_info[3] != None %}
+                                        {{user_info[3]}}
+                                    {% else %}
+                                        <h3 class="col-centered not-available">No bio available! :(</h3>
+                                    {% endif %}
+                                </p> 
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </div> </div>
             </div>
             
             <!-- Page Header -->
@@ -114,7 +122,7 @@ and the article content.
                     {% endfor %}
             </div>
             {% else %}
-                <p style="font-size:150%;text-align:center">No worlds to display!</p>
+                <h3 class="col-centered not-available">No worlds to display! :(</h3>
             {% endif %}
                 
             <!-- Page Header -->
@@ -142,7 +150,7 @@ and the article content.
                 {% endfor %}
             </div>
             {% else %}
-                <p style="font-size:150%;text-align:center">No worlds to display!</p>
+                <h3 class="col-centered not-available">No worlds to display! :(</p>
             {% endif %}
         {% endif %}
     </div>

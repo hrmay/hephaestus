@@ -86,6 +86,10 @@ works with bootstrap's list group to create an accordion
     text-align: center !important;
 }
 
+.not-available {
+    color: #bbbbbb;
+}
+
 #logo {
     height: 30px;
     width: 30px;

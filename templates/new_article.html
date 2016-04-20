@@ -1,22 +1,13 @@
-<!-----------------------------------------------
-NEW_CATEGORY.HTML
-Page for creating a new category
------------------------------------------------->
-
 {% extends "layout.html" %}
 
 {% block content %}
-    <script>
-        function showDetails() { document.getElementById("collab-fieldset").classList.remove("hidden"); }
-        function hideDetails() { document.getElementById("collab-fieldset").classList.add("hidden"); }
-    </script>
 
     <div class="container">
         
         <!-- Jumbotron header -->
-        <header class="jumbotron hero-spacer" id="main-header">
-            <h1>Create World</h1>
-        </header>
+        <!-- Jumbotron header -->
+        <!--<header class="jumbotron hero-spacer" id="main-header"></header>-->
+        <h1>New Article</h1>
         
         <div class="row">
             <div class="col-md-12">
@@ -29,7 +20,7 @@ Page for creating a new category
         {% with messages = get_flashed_messages(category_filter=["database_error"]) %}
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-danger col-md-4 col-md-offset-4">
+                    <div class="alert alert-danger col-md-6 col-md-offset-3">
                       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                       {{message}}
                     </div>
@@ -40,7 +31,7 @@ Page for creating a new category
         {% with messages = get_flashed_messages(category_filter=["creation_error"]) %}
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-warning col-md-4 col-md-offset-4">
+                    <div class="alert alert-warning col-md-6 col-md-offset-3">
                       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                       {{message}}
                     </div>
@@ -53,20 +44,19 @@ Page for creating a new category
             
             <!-- Text input-->
             <div class="row">
-                <fieldset class="form-group col-md-6">
+                <fieldset class="form-group col-md-6 col-md-offset-3">
                     <label for="category-name">Name of the article:</label>
                     <input id="article-name" name="article-name" type="text" placeholder="Article Name" class="form-control input-md" required="">
                 </fieldset>
             </div>
             
             <div class="row">
-                <fieldset class="form-group col-md-12">
+                <fieldset class="form-group col-md-6 col-md-offset-3">
                     <label for="short-desc">Body of the article:</label>
                     <textarea id="article-body" name="article-body" type="text" placeholder="This article is..." class="form-control input-md" rows=3 required=""></textarea>
                 </fieldset>    
             </div>
                 
-            
             <div class="row">
                 <fieldset class="form-group col-centered">
                     <button id="create_button" name="create_button" type="submit" class="btn btn-primary">Create!</button>
@@ -76,5 +66,10 @@ Page for creating a new category
         </form>
             
     </div>
+
+    <script>
+        var images = ['header1.jpg', 'header2.jpg', 'header3.jpg', 'header4.jpg', 'header5.jpg', 'header6.jpg'];
+        $('#main-header').css('background-image', 'url(../static/images/header_images/' + images[Math.floor(Math.random() * images.length)] + ')');
+    </script>
 
 {% endblock %}

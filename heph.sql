@@ -161,13 +161,14 @@ CREATE TABLE Featured
 DROP USER IF EXISTS hermes;
 CREATE USER hermes WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, subgenre, userworlds, category, article TO hermes;
-GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq TO hermes;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq, world_worldid_seq TO hermes;
 CREATE EXTENSION pgcrypto;
 
 
 -- Insert test data
 INSERT INTO member (Username, Email, DispEmail, Password, UserDesc) VALUES ('Marty', 'mmclark317@gmail.com', TRUE, crypt('123', gen_salt('bf')), 'Hi!! I''m Mary and I love CYBERPUNK ANIME. I also love science fiction and fantasy. I play D&D!! My favorite show is Steven Universe.');
 INSERT INTO member (Username, Email, DispEmail, Password) VALUES ('Evan', 'romannumeralii@gmail.com', FALSE, crypt('password', gen_salt('bf')));
+
 
 INSERT INTO world (CreatorID, Name, PrimGenre, ShortDesc, LongDesc) VALUES 
     ((SELECT member.UserID FROM member WHERE member.Username = 'Evan'), 

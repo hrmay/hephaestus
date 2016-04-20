@@ -180,11 +180,6 @@ def mainIndex():
     description = worlddesc(worldid)
     return render_template("index.html", world=world_results, world_desc = description[0][1], worldID = worldid, user=getUser());
 #end mainIndex()    
-    
-@app.route('/article')
-def articletest():
-     return render_template("article.html");
-#end articletest()
 
 #------------------------------------
 #  WORLD ROUTES
@@ -205,8 +200,6 @@ def world(worldid):
 #------------------------------------
 #  Article Routes
 #------------------------------------
-
-
 
 @app.route('/world/<worldid>/<categoryname>/<articlename>')
 def article(worldid, categoryname, articlename):
@@ -297,6 +290,7 @@ def user(username):
 @app.route('/signup', methods=['POST','GET'])
 def signup():
     if 'username' in session:
+        flash('You''re already signed up! (And logged in...?)', 'session_error')
         redirect(url_for('mainIndex'))
     
     errorList = []
@@ -370,6 +364,10 @@ def signup():
 
 @app.route('/login', methods=['POST','GET'])
 def login():
+    if 'username' in session:
+        flash('You''re already logged in!', 'session_error')
+        return redirect(url_for('login'))
+    
     errorList = []
     if (request.method == 'GET'):
         return render_template("login.html", errors = errorList, user=getUser())

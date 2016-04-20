@@ -574,10 +574,11 @@ def newCategory(worldid):
     
     #get permissions
     try:
-        cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query)
+        cur.execute("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query)
     except:
         print("Failed to execute: "),
-        print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query))
+        print(cur.mogrify("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query))
+    
     
     if cur.rowcount != 1:
         #you're not the real creator
@@ -625,13 +626,14 @@ def newArticle(worldid, category):
     
     #get permissions
     try:
-        cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query)
+        cur.execute("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query)
     except:
         print("Failed to execute: "),
-        print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query))
+        print(cur.mogrify("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query))
     
-    if cur.rowcount != 1:
-        #you're not the real creator
+    if cur.rowcount < 1:
+        #you're not in the permissions
+        print('User does not have permission to complete this action')
         flash('You don''t have the permission to do that!', 'permission_error')
         return redirect(url_for('mainIndex'))
     else:

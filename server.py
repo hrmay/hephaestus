@@ -305,10 +305,11 @@ def user(username):
         #Get user's collaborative worlds
         try:
             query = {'username':username}
+            cur.execute("""SELECT userworlds.WorldID FROM userworlds JOIN member ON (userworlds.userid = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query)
             collab_results = cur.fetchall()
         except:
             print("ERROR executing SELECT")
-            print(cur.mogrify("""SELECT world.WorldID FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
+            print(cur.mogrify("""SELECT userworlds.WorldID FROM userworlds JOIN member ON (userworlds.userID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s);""", query))
 
         #put collab worlds into an array
         collabs = []

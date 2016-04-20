@@ -63,13 +63,18 @@ article page.
                         <p class="detail" id="world-records">{{world_info[2][1]}} Articles</p>
                     </div>
                 </div>
-                
+                {% if permissions == True %}
+                    <a href="/world/{{worldid}}/newcategory" class="list-group-item accordion-toggle">Add Category</a>
+                {% endif %}
                 <div class="list-group" id="world-nav">
                     {% for category in world_info[1] %}
                         <a class="list-group-item accordion-toggle">{{category}}</a>
                         <div class="list-group sub-category accordion-content">
+                            {% if permissions == True %}
+                            <a href="/world/{{worldid}}/{{category}}/newarticle" class="list-group-item">Add Article</a>
+                            {% endif %}
                             {% for article in world_info[1][category] %}
-                                <a href="/world/1/{{category}}/{{article}}" class="list-group-item">{{article}}</a>
+                                <a href="/world/{{worldid}}/{{category}}/{{article}}" class="list-group-item">{{article}}</a>
                             {% endfor %}
                         </div>
                     {% endfor %}

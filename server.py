@@ -80,22 +80,36 @@ def worldinfo(worldid):
         print("ERROR executing SELECT")
         print(cur.mogrify("SELECT world.Name, member.Username, world.PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.WorldID = %(worldid)s;", query))
         world_results = None
-    
-    #grab category names
-    try:
-        cur.execute("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query)
         
+    raw_categories = []
+    #grab raw categories
+    try:
+        cur.execute("SELECT category.Name FROM category JOIN world ON (category.WorldID = world.WorldID) WHERE world.WorldID = %(worldid)s ORDER BY LOWER(category.Name);", query)
+    except:
+        print("Failed to execute: "),
+        print(cur.mogrify("SELECT category.Name FROM category JOIN world ON (category.WorldID = world.WorldID) WHERE world.WorldID = %(worldid)s ORDER BY LOWER(category.Name);", query))
+    
+    #insert all the categories into the dictionary
+    ca_results = {}
+    if cur.rowcount > 0:
+        raw_categories = cur.fetchall()
+        for raw_category in raw_categories:
+            ca_results[raw_category[0]] = []
+    
+    #grab category names and articles
+    try:
+        cur.execute("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY LOWER(category.Name), LOWER(article.Name);""", query)
     except:
         print("ERROR executing SELECT")
-        print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query))
+        print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY LOWER(category.Name), LOWER(article.Name);""", query))
     
     category_article_counts = [] #[0] is category count, [1] is article count
     
-    ca_results = {}
+    #insert all the articles under their corresponding categories
     if cur.rowcount > 0:
         category_results = cur.fetchall()
         tempCategories = [x[0] for x in category_results]
-        category_article_counts.append(len(set(tempCategories))) #category count
+        category_article_counts.append(len(set(raw_categories))) #category count
         category_article_counts.append(len(category_results)) #article count
         for category in category_results:
             if category[0] in ca_results:
@@ -103,15 +117,9 @@ def worldinfo(worldid):
             else:
                 ca_results[category[0]] = [category[1]]
     else:
-        category_article_counts = [0,0]
-    """
-    ca_results = {}
-    for category in category_results:
-        if category[0] in ca_results:
-            ca_results[category[0]].append(category[1])
-        else:
-            ca_results[category[0]] = [category[1]]
-    """
+        category_article_counts = [len(set(raw_categories)),0]
+    print(ca_results)
+
     results = [world_results, ca_results, category_article_counts];
         
     return results
@@ -159,6 +167,25 @@ def articledesc(worldid, categoryname, articlename):
     
     return description
 #end articledesc
+
+#------------------------------------
+#  PERMISSIONS
+#------------------------------------
+def getPermissions(worldid):
+    if 'username' in session:
+        conn = connectToDB()
+        cur = conn.cursor()
+        query = {'username': session['username'], 'worldid': worldid}
+        try:
+            cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) JOIN userworlds ON (userworlds.UserID = member.UserID) WHERE world.CreatorID = (SELECT UserID FROM member WHERE Username = %(username)s) OR (userworlds.WorldID = %(worldid)s AND userworlds.UserID IN (SELECT UserID FROM member WHERE Username = %(username)s) AND userworlds.Role = 'Editor');", query)
+        except:
+            print("Failed to execute: "),
+            print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) JOIN userworlds ON (userworlds.UserID = member.UserID) WHERE world.CreatorID = (SELECT UserID FROM member WHERE Username = %(username)s) OR (userworlds.WorldID = %(worldid)s AND userworlds.UserID IN (SELECT UserID FROM member WHERE Username = %(username)s) AND userworlds.Role = 'Editor');", query))
+        if cur.rowcount > 0:
+            #they have permissions
+            return True
+    else:
+        return False #can't have permissions if you're not logged in
 
 #------------------------------------
 #  SOCKET IO
@@ -209,7 +236,7 @@ def world(worldid):
     print(worldid)
     description = worlddesc(worldid)
     
-    return render_template("world.html", world_info = results, world_description=description, worldid = worldid, color="#aaaaaa", user=getUser(), viewing_world = True);
+    return render_template("world.html", world_info = results, world_description=description, worldid = worldid, color="#aaaaaa", user=getUser(), viewing_world = True, permissions=getPermissions(worldid));
 
 #------------------------------------
 #  End World
@@ -226,7 +253,7 @@ def article(worldid, categoryname, articlename):
     article_results = articledesc(worldid, categoryname, articlename)
     print(article_results)
     
-    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa", user=getUser(), viewing_world=False);
+    return render_template("article.html", world_info = world_results, article_description = article_results, worldid = worldid, color="#aaaaaa", user=getUser(), viewing_world=False, permissions=getPermissions(worldid));
 
 #------------------------------------
 #  End Article
@@ -440,6 +467,9 @@ def logout():
 #  End Logout
 #------------------------------------
 
+#------------------------------------
+#  CREATION ROUTES
+#------------------------------------
 @app.route('/createworld', methods=['POST','GET'])
 def createworld():
     #Redirect users who aren't logged in
@@ -501,7 +531,7 @@ def createworld():
             if (privacy == 'collab'):
                 for name in newWorld['collab_list']:
                     try:
-                        cur.execute("""INSER INTO UserWorlds(WorldID, UserID) VALUES(%(worldid)s,((SELECT userid FROM member WHERE LOWER(member.username) = LOWER(%(name)s))));""", {'worldid':worldid,'name':name})
+                        cur.execute("""INSERT INTO UserWorlds(WorldID, UserID) VALUES(%(worldid)s,((SELECT userid FROM member WHERE LOWER(member.username) = LOWER(%(name)s))));""", {'worldid':worldid,'name':name})
                     except:
                         print(cur.mogrify("""INSERT INTO UserWorlds(WorldID, UserID) VALUES(%(worldid)s,((SELECT userid FROM member WHERE LOWER(member.username) = LOWER(%(name)s))));""", {'worldid':worldid,'name':name}))
                         flash('Failed to add user ' + name + '! Please double-check this username and try again.', 'creation_error')
@@ -526,6 +556,110 @@ def createworld():
     else:
         flash('There was a problem creating this world! Please try again.', 'creation_error')
         return render_template('create_world.html', user=getUser(), genres=genres)
+# end createworld
+
+        
+@app.route('/world/<worldid>/newcategory', methods=['GET', 'POST'])
+def newCategory(worldid):
+    #you have to be logged in to do this
+    if 'username' not in session:
+        flash('Please login before accessing this page!', 'session_error')
+        return redirect(url_for('login'))
+    
+    
+    #connect to the database
+    conn = connectToDB()
+    cur = conn.cursor()
+    
+    query = {'worldid': worldid, 'username': session['username']}
+    
+    #get permissions
+    try:
+        cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query)
+    except:
+        print("Failed to execute: "),
+        print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query))
+    
+    if cur.rowcount != 1:
+        #you're not the real creator
+        flash('You don''t have the permission to do that!', 'permission_error')
+        return redirect(url_for('mainIndex'))
+    else:
+        if request.method == 'GET':
+            return render_template('new_category.html', user=getUser(), worldid=worldid)
+        elif request.method == 'POST':
+            cat_query = {'worldid': worldid, 'catname': request.form['category-name']}
+            try:
+                cur.execute("SELECT category.Name FROM category WHERE category.WorldID = %(worldid)s AND category.Name = %(catname)s;", cat_query)
+                if cur.rowcount < 1:
+                    try:
+                        cur.execute("""INSERT INTO category (WorldID, Name) VALUES(%(worldid)s, %(catname)s);""", cat_query)
+                    except:
+                        print("Failed to execute: "),
+                        print(cur.mogrify("""INSERT INTO category (WorldID, Name) VALUES(%(worldid)s, %(catname)s);""", cat_query))
+                        conn.rollback()
+                    conn.commit()
+                else:
+                    #a category with this name already exists
+                    #add error message
+                    return redirect(url_for('world', worldid=worldid))
+            except:
+                print("Failed to execute: "),
+                print(cur.mogrify("SELECT category.Name FROM category WHERE category.WorldID = %(worldid)s AND category.Name = %(catname)s;", cat_query))
+                
+        return redirect(url_for('world', worldid=worldid))
+# end newcategory
+
+@app.route('/world/<worldid>/<category>/newarticle', methods=['GET', 'POST'])
+def newArticle(worldid, category):
+    #you have to be logged in to do this
+    if 'username' not in session:
+        flash('Please login before accessing this page!', 'session_error')
+        return redirect(url_for('login'))
+    
+    
+    #connect to the database
+    conn = connectToDB()
+    cur = conn.cursor()
+    
+    query = {'worldid': worldid, 'category': category, 'username': session['username']}
+    
+    #get permissions
+    try:
+        cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query)
+    except:
+        print("Failed to execute: "),
+        print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE member.Username = %(username)s AND world.WorldID = %(worldid)s;", query))
+    
+    if cur.rowcount != 1:
+        #you're not the real creator
+        flash('You don''t have the permission to do that!', 'permission_error')
+        return redirect(url_for('mainIndex'))
+    else:
+        if request.method == 'GET':
+            return render_template('new_article.html', user=getUser(), worldid=worldid, category=category)
+        elif request.method == 'POST':
+            article_query = {'worldid': worldid, 'category':category, 'articlename': request.form['article-name'], 'articlebody': request.form['article-body']}
+            try:
+                cur.execute("SELECT article.Name FROM article WHERE article.CategoryID = (SELECT CategoryID FROM category WHERE Name = %(category)) AND article.Name = %(articlename);", article_query)
+                if cur.rowcount < 1:
+                    try:
+                        cur.execute("""INSERT INTO article (WorldID, CategoryID, Name, Body) VALUES(%(worldid)s, (SELECT CategoryID FROM category WHERE Name = %(category)s), %(articlename)s, %(articlebody)s);""", article_query)
+                    except:
+                        print("Failed to execute: "),
+                        print(cur.mogrify("""INSERT INTO article (WorldID, CategoryID, Name, Body) VALUES(%(worldid)s, (SELECT CategoryID FROM category WHERE Name = %(category)s), %(articlename)s, %(articlebody)s);""", article_query))
+                        conn.rollback()
+                    conn.commit()
+                else:
+                    #an article with this name already exists
+                    #add error message
+                    return redirect(url_for('world', worldid=worldid))
+            except:
+                print("Failed to execute: "),
+                print(cur.mogrify("SELECT article.Name FROM article WHERE article.CategoryID = (SELECT CategoryID FROM category WHERE Name = %(category)) AND article.Name = %(articlename);", article_query))
+        return redirect(url_for('world', worldid=worldid))
+    
+    
         
 
 if __name__ == '__main__':

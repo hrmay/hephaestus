@@ -177,13 +177,23 @@ def getPermissions(worldid):
         cur = conn.cursor()
         query = {'username': session['username'], 'worldid': worldid}
         try:
-            cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) JOIN userworlds ON (userworlds.UserID = member.UserID) WHERE world.CreatorID = (SELECT UserID FROM member WHERE Username = %(username)s) OR (userworlds.WorldID = %(worldid)s AND userworlds.UserID IN (SELECT UserID FROM member WHERE Username = %(username)s) AND userworlds.Role = 'Editor');", query)
+            cur.execute("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE world.CreatorID = (SELECT UserID FROM member WHERE Username = %(username)s);", query)
+            if cur.rowcount > 0:
+                return True #they have permissions
+            else:
+                #check userworlds
+                try:
+                    cur.execute("SELECT member.Username FROM member JOIN userworlds ON (member.UserID = userworlds.UserID) WHERE member.Username = %(username)s AND userworlds.Role = 'Editor' AND userworlds.WorldID = %(worldid)s;", query)
+                    if cur.rowcount > 0:
+                        return True #they have permissions
+                    else:
+                        return False #they don't
+                except:
+                    print("Failed to execute: "),
+                    print(cur.mogrify("SELECT member.Username FROM member JOIN userworlds ON (member.UserID = userworlds.UserID) WHERE member.Username = %(username)s AND userworlds.Role = 'Editor' AND userworlds.WorldID = %(worldid)s;", query))
         except:
             print("Failed to execute: "),
-            print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) JOIN userworlds ON (userworlds.UserID = member.UserID) WHERE world.CreatorID = (SELECT UserID FROM member WHERE Username = %(username)s) OR (userworlds.WorldID = %(worldid)s AND userworlds.UserID IN (SELECT UserID FROM member WHERE Username = %(username)s) AND userworlds.Role = 'Editor');", query))
-        if cur.rowcount > 0:
-            #they have permissions
-            return True
+            print(cur.mogrify("SELECT member.Username FROM member JOIN world ON (world.CreatorID = member.UserID) WHERE world.CreatorID = (SELECT UserID FROM member WHERE Username = %(username)s);", query))
     else:
         return False #can't have permissions if you're not logged in
 

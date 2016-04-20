@@ -84,8 +84,8 @@ CREATE TYPE sub_genre AS ENUM (
 CREATE TABLE Member
 (
     UserID      SERIAL NOT NULL,
-    Username    VARCHAR(20) NOT NULL,
-    Email       VARCHAR(60) NOT NULL,
+    Username    VARCHAR(20) UNIQUE NOT NULL,
+    Email       VARCHAR(60) UNIQUE NOT NULL,
     DispEmail   BOOLEAN DEFAULT False,
     Password    TEXT NOT NULL,
     UserDesc    TEXT,

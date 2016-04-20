@@ -297,7 +297,7 @@ def user(username):
             collab_results = collab_results[0];
             for collabid in collab_results:
                 colname = worldinfo(collabid)[0][0][0]
-                coldescription = worlddesc(collabid)[0][0]
+                coldescription = worlddesc(collabid)[0][1]
                 collab = [collabid, colname, coldescription]
                 collabs.append(collab)
         

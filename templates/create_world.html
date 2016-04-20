@@ -38,7 +38,12 @@ Page for creating a new world
                     
                 <fieldset class="form-group col-md-6">
                     <label for="primary-genre">Which of these genres best fits your world?</label>
-                    <input id="primary-genre" name="primary-genre" type="text" placeholder="Primary Genre" class="form-control input-md" required="">
+                    <select class="form-control input-md" id="primary-genre" name="primary-genre" required="">
+                        <option value="" disabled selected>Primary Genre</option>
+                        {% for genre in genres %}
+                        <option value="{{genre}}">{{genre}}</option>
+                        {% endfor %}
+                    </select>
                 </fieldset>
             </div>
                 

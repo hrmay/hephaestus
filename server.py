@@ -66,34 +66,53 @@ def connectToDB():
 def worldinfo(worldid):
     conn = connectToDB()
     cur = conn.cursor()
+    world_results = []
+    category_results = []
     
     query = {'worldid': worldid}
+    print(worldid)
     
     #grab world info
     try:
-        cur.execute("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN subgenre ON (world.WorldID = subgenre.WorldID) WHERE world.WorldID = %(worldid)s GROUP BY world.Name, member.Username, PrimGenre;""", query)
+        cur.execute("SELECT world.Name, member.Username, world.PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.WorldID = %(worldid)s;", query)
         world_results = cur.fetchall()
     except:
         print("ERROR executing SELECT")
-        print(cur.mogrify("""SELECT world.Name, member.Username, COUNT(DISTINCT category.CategoryID), COUNT(DISTINCT article.ArticleID), PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) JOIN category ON (world.WorldID = category.WorldID) JOIN article ON (world.WorldID = article.WorldID) JOIN subgenre ON (world.WorldID = subgenre.WorldID) WHERE world.WorldID = %(worldid)s GROUP BY world.Name, member.Username, PrimGenre;""", query))
+        print(cur.mogrify("SELECT world.Name, member.Username, world.PrimGenre FROM world JOIN member ON (world.CreatorID = member.UserID) WHERE world.WorldID = %(worldid)s;", query))
         world_results = None
     
     #grab category names
     try:
         cur.execute("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query)
-        category_results = cur.fetchall()
+        
     except:
         print("ERROR executing SELECT")
         print(cur.mogrify("""SELECT category.Name, article.Name FROM category JOIN world ON (category.WorldID = world.WorldID) JOIN article ON (category.CategoryID = article.CategoryID) WHERE world.WorldID = %(worldid)s ORDER BY category.Name, article.Name;""", query))
     
+    category_article_counts = [] #[0] is category count, [1] is article count
+    
+    ca_results = {}
+    if cur.rowcount > 0:
+        category_results = cur.fetchall()
+        tempCategories = [x[0] for x in category_results]
+        category_article_counts.append(len(set(tempCategories))) #category count
+        category_article_counts.append(len(category_results)) #article count
+        for category in category_results:
+            if category[0] in ca_results:
+                ca_results[category[0]].append(category[1])
+            else:
+                ca_results[category[0]] = [category[1]]
+    else:
+        category_article_counts = [0,0]
+    """
     ca_results = {}
     for category in category_results:
         if category[0] in ca_results:
             ca_results[category[0]].append(category[1])
         else:
             ca_results[category[0]] = [category[1]]
-    
-    results = [world_results, ca_results];
+    """
+    results = [world_results, ca_results, category_article_counts];
         
     return results
 #end worldinfo()

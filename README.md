@@ -1,7 +1,7 @@
 Hephaestus <img src="https://i.gyazo.com/2947ce425f238815fff8617065b1a780.png" width=32 height=32>
 ===========================================
 
-A web application for creating fantasy worlds for novels, games, etc. Once they've created an account,
+A (draft of a) web application for creating fantasy worlds for novels, games, etc. Once they've created an account,
 users can create worlds, work with collaborators (or alone!), and share their public files with any viewers.
 
 Setup

@@ -581,18 +581,8 @@ def newCategory(worldid):
     conn = connectToDB()
     cur = conn.cursor()
     
-    query = {'worldid': worldid, 'username': session['username']}
-    
     #get permissions
-    try:
-        cur.execute("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query)
-    except:
-        print("Failed to execute: "),
-        print(cur.mogrify("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query))
-    
-    
-    if cur.rowcount != 1:
-        #you're not the real creator
+    if getPermissions(worldid) == False:
         flash('You don''t have the permission to do that!', 'permission_error')
         return redirect(url_for('mainIndex'))
     else:
@@ -633,18 +623,9 @@ def newArticle(worldid, category):
     conn = connectToDB()
     cur = conn.cursor()
     
-    query = {'worldid': worldid, 'category': category, 'username': session['username']}
     
     #get permissions
-    try:
-        cur.execute("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query)
-    except:
-        print("Failed to execute: "),
-        print(cur.mogrify("""SELECT member.Username FROM member JOIN world ON world.creatorid = member.userid JOIN userworlds ON userworlds.userid = member.userid WHERE world.worldid = %(worldid)s OR userworlds.worldid = %(worldid)s AND member.username=%(username)s;""", query))
-    
-    if cur.rowcount < 1:
-        #you're not in the permissions
-        print('User does not have permission to complete this action')
+    if getPermissions(worldid) == False:
         flash('You don''t have the permission to do that!', 'permission_error')
         return redirect(url_for('mainIndex'))
     else:

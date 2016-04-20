@@ -485,6 +485,8 @@ def createworld():
         except:
             print("Failed to execute: "),
             print(cur.mogrify("""INSERT INTO world (creatorid, name, primgenre, private, shortdesc) VALUES ((SELECT userid FROM member WHERE member.username = %(creator)s), %(name)s, %(prim-genre)s, %(private)s, %(short-desc)s);""", newWorld))
+            conn.rollback()
+        conn.commit()
         
     #If successful, select from world to get worldid and redirect to the new world
     if (success):
@@ -495,9 +497,9 @@ def createworld():
             print("Failed to execute: "),
             print(cur.mogrify("""SELECT worldid FROM world WHERE world.name = %(name)s and world.creatorid = (SELECT userid FROM member WHERE member.username = %(creator)s);""", newWorld))
             
-        worldid = cur.fetchone();    
         #Redirect to the new world
-        return redirect(url_for('world/' + worldid))
+        worldid = worldid[0]
+        return redirect(url_for('world/' + str(worldid)))
     #If not, redirect back to the page with any errors added
     else:
         return render_template('create_world.html', user=getUser(), genres=genres)

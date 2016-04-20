@@ -161,7 +161,7 @@ CREATE TABLE Featured
 DROP USER IF EXISTS hermes;
 CREATE USER hermes WITH PASSWORD '4SrGY9gPFU72aJxh';
 GRANT SELECT, INSERT, UPDATE ON member, world, subgenre, userworlds, category, article TO hermes;
-GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq, world_worldid_seq TO hermes;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE member_userid_seq, world_worldid_seq, category_categoryid_seq, article_articleid_seq TO hermes;
 CREATE EXTENSION pgcrypto;
 
 

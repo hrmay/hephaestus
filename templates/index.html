@@ -23,6 +23,19 @@ front page.
             <p><a class="btn btn-primary btn-large" href="/signup">Sign Up</a>
             </p>
         </header>
+        
+        <!-- Get flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info col-md-12">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         {% else %}
             {% include "dashboard.html" %}
         {% endif %}

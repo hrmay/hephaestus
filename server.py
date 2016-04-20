@@ -305,7 +305,6 @@ def user(username):
         #Get user's collaborative worlds
         try:
             query = {'username':username}
-            cur.execute("""SELECT world.WorldID FROM world JOIN userworlds ON (world.WorldID = userworlds.UserID) JOIN member ON (userworlds.UserID = member.UserID) WHERE LOWER(member.Username) = LOWER(%(username)s) AND userworlds.Role = 'Editor';""", query);
             collab_results = cur.fetchall()
         except:
             print("ERROR executing SELECT")
@@ -336,8 +335,8 @@ def user(username):
 @app.route('/signup', methods=['POST','GET'])
 def signup():
     if 'username' in session:
-        flash('You''re already signed up! (And logged in...?)', 'session_error')
-        redirect(url_for('mainIndex'))
+        #flash("You're already signed up! (And logged in...?)", 'session_error')
+        return redirect(url_for('mainIndex'))
     
     errorList = []
     if request.method == 'GET':
@@ -641,7 +640,7 @@ def newArticle(worldid, category):
         elif request.method == 'POST':
             article_query = {'worldid': worldid, 'category':category, 'articlename': request.form['article-name'], 'articlebody': request.form['article-body']}
             try:
-                cur.execute("SELECT article.Name FROM article WHERE article.CategoryID = (SELECT CategoryID FROM category WHERE Name = %(category)) AND article.Name = %(articlename);", article_query)
+                cur.execute("""SELECT article.Name FROM article WHERE article.CategoryID = (SELECT CategoryID FROM category WHERE Name = %(category)s) AND article.Name = %(articlename)s;""", article_query)
                 if cur.rowcount < 1:
                     try:
                         cur.execute("""INSERT INTO article (WorldID, CategoryID, Name, Body) VALUES(%(worldid)s, (SELECT CategoryID FROM category WHERE Name = %(category)s), %(articlename)s, %(articlebody)s);""", article_query)
@@ -656,10 +655,8 @@ def newArticle(worldid, category):
                     return redirect(url_for('world', worldid=worldid))
             except:
                 print("Failed to execute: "),
-                print(cur.mogrify("SELECT article.Name FROM article WHERE article.CategoryID = (SELECT CategoryID FROM category WHERE Name = %(category)) AND article.Name = %(articlename);", article_query))
+                print(cur.mogrify("""SELECT article.Name FROM article WHERE article.CategoryID = (SELECT CategoryID FROM category WHERE Name = %(category)s) AND article.Name = %(articlename)s;""", article_query))
         return redirect(url_for('world', worldid=worldid))
-    
-    
         
 
 if __name__ == '__main__':

@@ -2,7 +2,12 @@ Hephaestus <img src="https://i.gyazo.com/2947ce425f238815fff8617065b1a780.png" w
 ===========================================
 
 A (draft of a) web application for creating fantasy worlds for novels, games, etc. Once they've created an account,
-users can create worlds, work with collaborators (or alone!), and share their public files with any viewers.
+users can create worlds, work with collaborators (or alone!), and share their public files with any viewers. 
+
+Note, all of the sensitive data in this repo is completely visible. It wasn't necessary that we keep it private, given
+that it was only a class assignment that was developed locally, but in the event that you use this code for something serious,
+make sure to hide sensitive data with the <code>.gitignore</code> and ensure that it's not publicly visible in C9 (either
+create a private workspace for it, or hide it outside of the workspace directory).
 
 Setup
 -----
